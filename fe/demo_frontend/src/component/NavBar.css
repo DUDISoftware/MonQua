@@ -1,0 +1,118 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+:root {
+    --light-green: #E8F5E9; /* Xanh lá nhạt */
+    --white: #FFFFFF;
+    --accent-green: #4CAF50; /* Xanh đậm */
+    --dark-green: #388E3C; /* Xanh đậm hơn */
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Header */
+.navbar {
+    background: var(--light-green);
+    padding: 1.5rem 2rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid var(--accent-green);
+}
+.navbar.scrolled {
+    padding: 1rem 2rem;
+    background: rgba(232, 245, 233, 0.95);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent-green);
+}
+.nav-link {
+    font-size: 1.1rem;
+    color: #444;
+    font-weight: 600;
+    position: relative;
+    transition: color 0.3s ease;
+}
+.nav-link:hover {
+    color: var(--accent-green);
+}
+.nav-link:hover::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: var(--accent-green);
+    animation: slideIn 0.3s ease forwards;
+}
+.nav-link.active {
+    color: #4CAF50;
+    font-weight: 700;
+    
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: var(--accent-green);
+    
+
+}
+@keyframes slideIn {
+    from { width: 0; }
+    to { width: 100%; }
+}
+.btn-login, .btn-register {
+    background: var(--accent-green);
+    color: var(--white);
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+    width: 120px;
+    height: 40px;
+}
+.btn-login:hover, .btn-register:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive: Khi menu collapse (màn hình nhỏ) */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        padding-top: 10px;
+    }
+    .navbar-nav {
+        margin-bottom: 15px;
+    }
+    .navbar-nav .nav-item {
+        width: 100%;
+        text-align: center;
+    }
+    .navbar-nav .button-item {
+        display: inline-block;
+        width: auto;
+    }
+    .navbar-nav {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .btn-login, .btn-register {
+        margin: 5px;
+    }
+}

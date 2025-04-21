@@ -1,0 +1,36 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+
+:root {
+    --light-green: #E8F5E9; /* Xanh lá nhạt */
+    --white: #FFFFFF;
+    --accent-green: #4CAF50; /* Xanh đậm */
+}
+
+/* Footer */
+.footer {
+    background: #2E7D32;
+    padding: 3rem 0;
+    color: var(--white);
+}
+.footer-link {
+    color: var(--white);
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+}
+.footer-link:hover {
+    color: var(--light-green);
+    transform: translateX(5px);
+}
+.footer input, .footer button {
+    border-radius: 20px;
+}
+.footer-credit {
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
