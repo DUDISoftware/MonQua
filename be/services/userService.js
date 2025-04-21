@@ -1,24 +1,29 @@
-const User = require("../models/user");
+const User = require("../models/User"); 
 const Role = require("../models/role");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 
 class UserService {
-    async register({ name, age, password, role }) {
-        if (!name || !age || !password) throw new Error("Thiếu thông tin");
-
-        const existingUser = await User.findOne({ name });
-        if (existingUser) throw new Error("Tên đã tồn tại");
-
+    // Đăng ký người dùng
+    async register({ username, email, gender, dob, password, role }) {
+        if (!username || !email || !gender || !dob || !password) {
+            throw new Error("Thiếu thông tin bắt buộc");
+        }
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            throw new Error("Email đã được sử dụng");
+        }
         const userRole = role || "user";
         const roleExists = await Role.findOne({ name: userRole });
         if (!roleExists) throw new Error(`Vai trò ${userRole} không hợp lệ`);
-
         const hashedPassword = await bcrypt.hash(password, 10);
+        // Tạo người dùng mới
         const newUser = new User({
             _id: new mongoose.Types.ObjectId(),
-            name,
-            age,
+            username,
+            email,
+            gender,
+            dob,
             password: hashedPassword,
             role: userRole
         });
@@ -26,30 +31,51 @@ class UserService {
         await newUser.save();
         return newUser;
     }
+    // Đăng nhập người dùng
+    async login({ username, email, password }) {
+        if ((!username && !email) || !password) {
+            throw new Error("Thiếu thông tin đăng nhập");
+        }
 
-    async login({ name, password }) {
-        const user = await User.findOne({ name });
-        if (!user) throw new Error("Tài khoản không tồn tại");
+        // Tìm người dùng bằng username hoặc email
+        const user = await User.findOne({
+            $or: [{ email }, { username }],
+        });
 
+        if (!user) {
+            throw new Error("Tài khoản không tồn tại");
+        }
+
+        // Kiểm tra mật khẩu
         const match = await bcrypt.compare(password, user.password);
-        if (!match) throw new Error("Sai mật khẩu");
+        if (!match) {
+            throw new Error("Sai mật khẩu");
+        }
 
         return user;
     }
-
     async deleteUser(id) {
-        return await User.findByIdAndDelete(id);
-    }
-
-    async updateUser(data) {
-        const updateFields = {};
-        if (data.name) updateFields.name = data.name;
-        if (data.age) updateFields.age = data.age;
-        if (data.role) updateFields.role = data.role;
-        if (data.password) {
-            updateFields.password = await bcrypt.hash(data.password, 10);
+        const deletedUser = await User.findByIdAndDelete(id);
+        if (!deletedUser) {
+            throw new Error("Không tìm thấy người dùng để xóa");
         }
-        return await User.findByIdAndUpdate(data._id, updateFields, { new: true });
+        return deletedUser;
+    }
+    async updateUser({ id, username, email, gender, dob, password, role }) {
+        const updateFields = {};
+        if (username) updateFields.username = username;
+        if (email) updateFields.email = email;
+        if (gender) updateFields.gender = gender;
+        if (dob) updateFields.dob = dob;
+        if (role) updateFields.role = role;
+        if (password) {
+            updateFields.password = await bcrypt.hash(password, 10);
+        }
+        const updatedUser = await User.findByIdAndUpdate(id, updateFields, { new: true });
+        if (!updatedUser) {
+            throw new Error("Không tìm thấy người dùng để cập nhật");
+        }
+        return updatedUser;
     }
 
     async getAllUsers() {
@@ -57,7 +83,11 @@ class UserService {
     }
 
     async getUserById(id) {
-        return await User.findById(id).select("-password");
+        const user = await User.findById(id).select("-password");
+        if (!user) {
+            throw new Error("Không tìm thấy người dùng");
+        }
+        return user;
     }
 }
 

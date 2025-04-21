@@ -4,10 +4,14 @@ const path = require("path");
 const DatabaseConnection = require("./configs/database");
 const config = require("./configs/setting.json");
 const mongoose = require("mongoose");
-const { seedDefaultRoles } = require("./models/role"); // Sử dụng hàm từ models/role
+const { seedDefaultRoles } = require("./models/role"); 
 
 const app = express();
-
+// Middleware để xử lý dữ liệu JSON và form
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 // Kết nối tới MongoDB
 (async () => {
     try {
@@ -30,7 +34,9 @@ const app = express();
         process.exit(1);
     }
 })();
-
+// Import các controllerr
+const router = require("./controllers/router"); 
+app.use("/", router); 
 // Khởi động server backend
 const server = app.listen(5000, function () {
     console.log("Mở http://localhost:5000 để kiểm tra API hoạt động.");

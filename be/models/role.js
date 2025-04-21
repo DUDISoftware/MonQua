@@ -1,4 +1,3 @@
-//D:\DaiHocHutechKhoa2021\41.NgoNguPhatTrienMoi\website_bandienthoai_nodejs_javascript_mongodb\backend\src\models\role.js
 const mongoose = require("mongoose");
 
 const RoleSchema = new mongoose.Schema({
