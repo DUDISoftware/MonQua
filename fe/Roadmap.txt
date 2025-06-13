@@ -1,0 +1,170 @@
+📦src
+ ┣ 📂admin
+ ┃ ┣ 📂assets
+ ┃ ┣ 📂components
+ ┃ ┣ 📂layouts
+ ┃ ┣ 📂routes
+ ┃ ┣ 📂theme
+ ┃ ┗ 📂views
+ ┣ 📂api
+ ┃ ┗ 📜UserApi.js
+ ┣ 📂user
+ ┃ ┣ 📂assets
+ ┃ ┃ ┣ 📜banner.png
+ ┃ ┃ ┣ 📜login.png
+ ┃ ┃ ┗ 📜MonQuaNho.png
+ ┃ ┣ 📂components
+ ┃ ┃ ┣ 📜Footer.jsx
+ ┃ ┃ ┗ 📜Header.jsx
+ ┃ ┣ 📂layouts
+ ┃ ┣ 📂routes
+ ┃ ┃ ┗ 📜RouterUser.jsx
+ ┃ ┣ 📂theme
+ ┃ ┗ 📂views
+ ┃ ┃ ┣ 📂Authorization
+ ┃ ┃ ┃ ┣ 📜login.jsx
+ ┃ ┃ ┃ ┗ 📜register.jsx
+ ┃ ┃ ┣ 📂CharityPrograms
+ ┃ ┃ ┃ ┣ 📂Banner
+ ┃ ┃ ┃ ┃ ┗ 📜BannerSection.jsx
+ ┃ ┃ ┃ ┣ 📂FeaturedPrograms
+ ┃ ┃ ┃ ┃ ┣ 📜FeaturedProgramCard.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜FeaturedProgramsList.jsx
+ ┃ ┃ ┃ ┣ 📂HowToDonate
+ ┃ ┃ ┃ ┃ ┗ 📜HowToDonate.jsx
+ ┃ ┃ ┃ ┣ 📂PopularPrograms
+ ┃ ┃ ┃ ┃ ┣ 📜PopularProgramCard.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜PopularProgramsList.jsx
+ ┃ ┃ ┃ ┗ 📜CharityProgramsPage.jsx
+ ┃ ┃ ┣ 📂community
+ ┃ ┃ ┃ ┣ 📂PostEditor
+ ┃ ┃ ┃ ┃ ┗ 📜PostEditor.jsx
+ ┃ ┃ ┃ ┣ 📂PostList
+ ┃ ┃ ┃ ┃ ┣ 📜CommentSection.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜PostItem.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜PostList.jsx
+ ┃ ┃ ┃ ┣ 📂Sidebar
+ ┃ ┃ ┃ ┃ ┣ 📜CommunityNotice.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜CommunityReviews.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜CommunityTags.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜LatestPosts.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜TopContributors.jsx
+ ┃ ┃ ┃ ┣ 📂Tabs
+ ┃ ┃ ┃ ┃ ┗ 📜CommunityTabs.jsx
+ ┃ ┃ ┃ ┗ 📜CommunityPage.jsx
+ ┃ ┃ ┣ 📂ContactSection
+ ┃ ┃ ┃ ┣ 📂ContactForm
+ ┃ ┃ ┃ ┃ ┗ 📜ContactForm.jsx
+ ┃ ┃ ┃ ┣ 📂ContactInfo
+ ┃ ┃ ┃ ┃ ┗ 📜ContactInfo.jsx
+ ┃ ┃ ┃ ┣ 📂Map
+ ┃ ┃ ┃ ┃ ┗ 📜Map.jsx
+ ┃ ┃ ┃ ┗ 📜FullContactSection.jsx
+ ┃ ┃ ┣ 📂Home
+ ┃ ┃ ┃ ┣ 📂Banner
+ ┃ ┃ ┃ ┃ ┗ 📜BannerSection.jsx
+ ┃ ┃ ┃ ┣ 📂CallToAction
+ ┃ ┃ ┃ ┃ ┗ 📜CallToAction.jsx
+ ┃ ┃ ┃ ┣ 📂CustomerReviews
+ ┃ ┃ ┃ ┃ ┗ 📜CustomerReviews.jsx
+ ┃ ┃ ┃ ┣ 📂HowItWorks
+ ┃ ┃ ┃ ┃ ┗ 📜HowItWorks.jsx
+ ┃ ┃ ┃ ┣ 📂ProductSection
+ ┃ ┃ ┃ ┃ ┣ 📜CategoryProducts.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜PopularProducts.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜ProductCategories.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜ProductItem.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜ProductList.jsx
+ ┃ ┃ ┃ ┣ 📂SearchFilter
+ ┃ ┃ ┃ ┃ ┣ 📜FilterBar.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜SearchBar.jsx
+ ┃ ┃ ┃ ┣ 📂WhyUs
+ ┃ ┃ ┃ ┃ ┗ 📜WhyUs.jsx
+ ┃ ┃ ┃ ┗ 📜FullHome.jsx
+ ┃ ┃ ┣ 📂Messenger
+ ┃ ┃ ┃ ┣ 📂ChatWindow
+ ┃ ┃ ┃ ┃ ┣ 📜ChatHeader.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜MessageInput.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜MessageItem.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜MessageList.jsx
+ ┃ ┃ ┃ ┣ 📂Sidebar
+ ┃ ┃ ┃ ┃ ┣ 📜ChatList.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜ChatListItem.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜StatusList.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜UserProfileCard.jsx
+ ┃ ┃ ┃ ┗ 📜MessengerPage.jsx
+ ┃ ┃ ┣ 📂PostGift
+ ┃ ┃ ┃ ┣ 📜index.jsx
+ ┃ ┃ ┃ ┣ 📜PostGiftCategorySelect.jsx
+ ┃ ┃ ┃ ┣ 📜PostGiftConditionSelect.jsx
+ ┃ ┃ ┃ ┣ 📜PostGiftDeliveryMethod.jsx
+ ┃ ┃ ┃ ┣ 📜PostGiftForm.jsx
+ ┃ ┃ ┃ ┣ 📜PostGiftImageUpload.jsx
+ ┃ ┃ ┃ ┗ 📜PostGiftLocationSelect.jsx
+ ┃ ┃ ┣ 📂product
+ ┃ ┃ ┃ ┣ 📂Banner
+ ┃ ┃ ┃ ┃ ┗ 📜ProductBanner.jsx
+ ┃ ┃ ┃ ┣ 📂Pagination
+ ┃ ┃ ┃ ┃ ┗ 📜Pagination.jsx
+ ┃ ┃ ┃ ┣ 📂ProductList
+ ┃ ┃ ┃ ┃ ┣ 📜ProductItem.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜ProductList.jsx
+ ┃ ┃ ┃ ┣ 📂SearchFilter
+ ┃ ┃ ┃ ┃ ┣ 📜FilterBar.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜SearchBar.jsx
+ ┃ ┃ ┃ ┣ 📂Sidebar
+ ┃ ┃ ┃ ┃ ┣ 📜FeaturedPosts.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜ProductReviews.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜ProductTags.jsx
+ ┃ ┃ ┃ ┗ 📜ProductListingPage.jsx
+ ┃ ┃ ┣ 📂ProductDetailPage
+ ┃ ┃ ┃ ┣ 📂Banner
+ ┃ ┃ ┃ ┃ ┗ 📜ProductBanner.jsx
+ ┃ ┃ ┃ ┣ 📂Pagination
+ ┃ ┃ ┃ ┃ ┗ 📜Pagination.jsx
+ ┃ ┃ ┃ ┣ 📂ProductDetailMain
+ ┃ ┃ ┃ ┃ ┣ 📜ProductCarousel.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜ProductDescription.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜ProductFeatures.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜ProductTitle.jsx
+ ┃ ┃ ┃ ┣ 📂RelatedProducts
+ ┃ ┃ ┃ ┃ ┣ 📜RelatedProductItem.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜RelatedProductsList.jsx
+ ┃ ┃ ┃ ┣ 📂Sidebar
+ ┃ ┃ ┃ ┃ ┣ 📜FeaturedPosts.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜GiverInfo.jsx
+ ┃ ┃ ┃ ┃ ┣ 📜ProductReviews.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜ProductTags.jsx
+ ┃ ┃ ┃ ┗ 📜ProductDetailPage.jsx
+ ┃ ┃ ┣ 📂Profile
+ ┃ ┃ ┃ ┣ 📂ProductList
+ ┃ ┃ ┃ ┃ ┣ 📜ProductItem.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜ProductList.jsx
+ ┃ ┃ ┃ ┣ 📂Sidebar
+ ┃ ┃ ┃ ┃ ┗ 📜ProfileAdBanner.jsx
+ ┃ ┃ ┃ ┣ 📂Tabs
+ ┃ ┃ ┃ ┃ ┗ 📜ProfileTabs.jsx
+ ┃ ┃ ┃ ┣ 📂UserCard
+ ┃ ┃ ┃ ┃ ┗ 📜UserCard.jsx
+ ┃ ┃ ┃ ┗ 📜ProfilePage.jsx
+ ┃ ┃ ┣ 📂ProfileSetting
+ ┃ ┃ ┃ ┣ 📂GiftManager
+ ┃ ┃ ┃ ┃ ┣ 📜GiftItem.jsx
+ ┃ ┃ ┃ ┃ ┗ 📜GiftList.jsx
+ ┃ ┃ ┃ ┣ 📂ProfileForm
+ ┃ ┃ ┃ ┃ ┗ 📜ProfileForm.jsx
+ ┃ ┃ ┃ ┣ 📂Sidebar
+ ┃ ┃ ┃ ┃ ┗ 📜ProfileSidebar.jsx
+ ┃ ┃ ┃ ┣ 📂Tabs
+ ┃ ┃ ┃ ┃ ┗ 📜SettingTabs.jsx
+ ┃ ┃ ┃ ┗ 📜ProfileSettingPage.jsx
+ ┃ ┃ ┗ 📂Roadmap
+ ┃ ┃ ┃ ┣ 📜FeatureItem.jsx
+ ┃ ┃ ┃ ┣ 📜FeedbackSection.jsx
+ ┃ ┃ ┃ ┣ 📜Roadmap.jsx
+ ┃ ┃ ┃ ┣ 📜RoadmapNote.jsx
+ ┃ ┃ ┃ ┗ 📜RoadmapSection.jsx 
+ ┣ 📜App.css
+ ┣ 📜App.jsx
+ ┣ 📜index.css
+ ┗ 📜main.jsx
