@@ -1,10 +1,17 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
 # Bỏ qua node_modules
 /node_modules
+/be/node_modules
+/fe/frontend/node_modules
+D:/CongTy/MonQua-TuanDan/be/node_modules
 
 # Bỏ qua file cấu hình môi trường
 /.env
+/be/.env
+/fe/frontend/.env
+D:/CongTy/MonQua-TuanDan/fe/frontend/.env
 
 # Bỏ qua log files
 npm-debug.log
