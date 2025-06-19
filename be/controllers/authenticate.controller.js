@@ -111,4 +111,112 @@ router.get("/test-security", verifyToken, (req, res) => {
     });
 });
 
+// Lấy danh sách người dùng (Role Admin)
+router.get("/users-list", verifyToken, checkRole("admin"), async (req, res) => {
+    try {
+        const users = await userService.getAllUsers();
+        return res.json({
+            error: 0,
+            error_text: "Lấy danh sách người dùng thành công!",
+            data_name: "Danh sách người dùng",
+            data: users
+        });
+    } catch (err) {
+        console.error("Lỗi lấy danh sách người dùng:", err.message);
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Danh sách người dùng",
+            data: []
+        });
+    }
+});
+
+// Lấy chi tiết người dùng theo ID (Role Admin và user)
+router.get("/user-detail/:id", verifyToken, checkMultiRole(["admin", "user"]), async (req, res) => {
+    try {
+        const user = await userService.getUserById(req.params.id);
+        if (!user) {
+            return res.status(404).json({
+                error: 404,
+                error_text: "Người dùng không tồn tại!",
+                data_name: "Chi tiết người dùng",
+                data: []
+            });
+        }
+        return res.json({
+            error: 0,
+            error_text: "Lấy chi tiết người dùng thành công!",
+            data_name: "Chi tiết người dùng",
+            data: [user]
+        });
+    } catch (err) {
+        console.error("Lỗi lấy chi tiết người dùng:", err.message);
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Chi tiết người dùng",
+            data: []
+        });
+    }
+});
+
+// Cập nhật thông tin người dùng (Role Admin và user)
+router.put("/update-user/:id", verifyToken, checkMultiRole(["admin", "user"]), async (req, res) => {
+    try {
+        const updatedUser = await userService.updateUser(req.params.id, req.body);
+        if (!updatedUser) {
+            return res.status(404).json({
+                error: 404,
+                error_text: "Người dùng không tồn tại!",
+                data_name: "Cập nhật người dùng",
+                data: []
+            });
+        }
+        return res.json({
+            error: 0,
+            error_text: "Cập nhật thông tin người dùng thành công!",
+            data_name: "Cập nhật người dùng",
+            data: [updatedUser]
+        });
+    } catch (err) {
+        console.error("Lỗi cập nhật thông tin người dùng:", err.message);
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Cập nhật người dùng",
+            data: []
+        });
+    }
+});
+
+// Xóa người dùng (Role Admin)
+router.delete("/delete-user/:id", verifyToken, checkRole("admin"), async (req, res) => {
+    try {
+        const deletedUser = await userService.deleteUser(req.params.id);
+        if (!deletedUser) {
+            return res.status(404).json({
+                error: 404,
+                error_text: "Người dùng không tồn tại!",
+                data_name: "Xóa người dùng",
+                data: []
+            });
+        }
+        return res.json({
+            error: 0,
+            error_text: "Xóa người dùng thành công!",
+            data_name: "Xóa người dùng",
+            data: [deletedUser]
+        });
+    } catch (err) {
+        console.error("Lỗi xóa người dùng:", err.message);
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Xóa người dùng",
+            data: []
+        });
+    }
+});
+
 module.exports = router;

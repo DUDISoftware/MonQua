@@ -35,19 +35,19 @@ exports.getUserByEmail = async (email) => {
 };
 
 // Lấy danh sách người dùng
-exports.getAllUsers = async (filters = {}) => {
+exports.getAllUsers = async () => {
     try {
-        return await User.find(filters).select('-password_hash'); // Changed from password to password_hash
+        return await User.find().select("-password_hash");
     } catch (error) {
         console.error("Lỗi khi lấy danh sách người dùng:", error.message);
         throw new Error("Lỗi khi lấy danh sách người dùng: " + error.message);
     }
 };
 
-// Lấy chi tiết người dùng
+// Lấy chi tiết người dùng theo ID
 exports.getUserById = async (id) => {
     try {
-        return await User.findById(id).select('-password_hash'); // Changed from password to password_hash
+        return await User.findById(id).select("-password_hash");
     } catch (error) {
         console.error("Lỗi khi lấy chi tiết người dùng:", error.message);
         throw new Error("Lỗi khi lấy chi tiết người dùng: " + error.message);
@@ -61,7 +61,7 @@ exports.updateUser = async (id, updateData) => {
             id,
             { $set: updateData },
             { new: true, runValidators: true }
-        ).select('-password_hash'); // Changed from password to password_hash
+        ).select("-password_hash");
     } catch (error) {
         console.error("Lỗi khi cập nhật thông tin người dùng:", error.message);
         throw new Error("Lỗi khi cập nhật thông tin người dùng: " + error.message);
@@ -81,7 +81,7 @@ exports.deleteUser = async (id) => {
 // Đăng ký người dùng mới
 exports.registerUser = async (userData) => {
     try {
-        const { email, password, name } = userData;
+        const { email, password, name, phone } = userData; // Thêm phone
 
         if (!email || !password || !name) {
             throw new Error("Thiếu thông tin đăng ký");
@@ -97,11 +97,12 @@ exports.registerUser = async (userData) => {
             email,
             password_hash,
             name,
+            phone, // Thêm phone
             provider: "local",
             verified: true,
         });
 
-        return { _id: user._id, email: user.email, name: user.name };
+        return { _id: user._id, email: user.email, name: user.name, phone: user.phone }; // Trả về phone
     } catch (error) {
         console.error("Lỗi đăng ký:", error.message);
         throw error;
@@ -151,7 +152,7 @@ exports.loginWithGoogle = async (idToken, requestInfo) => {
     try {
         const ticket = await googleClient.verifyIdToken({
             idToken: idToken,
-            audience: GOOGLE_CLIENT_ID
+            audience: GOOGLE_CLIENT_ID // Đảm bảo khớp với Client ID
         });
 
         const payload = ticket.getPayload();
