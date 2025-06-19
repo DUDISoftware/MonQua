@@ -3,8 +3,6 @@ frontend/node_modules/
 backend/node_modules/
 be/node_modules/
 fe/frontend/node_modules/
-node_modules/
-**/node_modules/
 
 # Bỏ qua file .env
 frontend/.env
@@ -12,13 +10,8 @@ backend/.env
 be/.env
 fe/frontend/.env
 /frontend/frontend_shop/.env
-**/.env
 # Bỏ qua file log
 *.log
-
-# Bỏ qua đường dẫn tuyệt đối - thêm để đảm bảo
-D:/CongTy/MonQua-TuanDan/be/node_modules
-D:/CongTy/MonQua-TuanDan/fe/frontend/.env
 
 # Bỏ qua build output nếu có
 frontend/dist/
