@@ -1,14 +1,10 @@
 const path = require("path");
-const config = require(path.join(__dirname, "setting.json"));
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
 
 class DatabaseConnection {
     static getMongoClient() {
-        const user = config.mongodb.username;
-        const pass = config.mongodb.password;
-        const dbName = config.mongodb.database;
-
-        const url = `mongodb+srv://${user}:${pass}@project.89jfuwr.mongodb.net/${dbName}?retryWrites=true&w=majority&appName=Project`;
-
+        // Lấy thông tin từ biến môi trường
+        const url = process.env.MONGO_URI;
         const { MongoClient } = require("mongodb");
         const client = new MongoClient(url);
         return client;
