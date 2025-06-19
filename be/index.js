@@ -1,43 +1,39 @@
+// Import các thư viện cần thiết
 const express = require("express");
-const bodyParser = require("body-parser");
-const path = require("path");
-const DatabaseConnection = require("./configs/database");
-const config = require("./configs/setting.json");
 const mongoose = require("mongoose");
-const { seedDefaultRoles } = require("./models/role"); 
+const dotenv = require("dotenv");
+const bodyParser = require('body-parser');
+const cors = require("cors");
 
+// Khởi tạo ứng dụng Express
 const app = express();
-// Middleware để xử lý dữ liệu JSON và form
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-// Kết nối tới MongoDB
-(async () => {
-    try {
-        const client = DatabaseConnection.getMongoClient();
-        await client.connect();
-        console.log("Kết nối MongoDB thành công!");
 
-        // Kết nối Mongoose
-        await mongoose.connect(client.s.url, {
-            dbName: config.mongodb.database
-        });
-        console.log("Kết nối Mongoose thành công!");
+// Cấu hình môi trường
+dotenv.config();
 
-        // Tạo dữ liệu role mặc định
-        await seedDefaultRoles();
+// Cấu hình middleware
+app.use(cors()); // Cho phép CORS
+app.use(bodyParser.urlencoded({ extended: false })); // Parse URL-encoded bodies
+app.use(express.json()); // Parse JSON requests
 
-        app.locals.dbClient = client;
-    } catch (error) {
-        console.error("Kết nối MongoDB thất bại:", error);
+// Cấu hình view engine
+app.set("view engine", "ejs");
+
+// Cấu hình routes
+app.use("/api", require("./routes/index.routes"));
+
+// Kết nối MongoDB và khởi động server
+mongoose
+    .connect(process.env.MONGO_URI)
+    .then(() => {
+        console.log("✅ Kết nối MongoDB thành công");
+    })
+    .catch((err) => {
+        console.error("❌ Lỗi kết nối MongoDB:", err.message);
         process.exit(1);
-    }
-})();
-// Import các controllerr
-const router = require("./controllers/router"); 
-app.use("/", router); 
-// Khởi động server backend
-const server = app.listen(5000, function () {
-    console.log("Mở http://localhost:5000 để kiểm tra API hoạt động.");
+    });
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
 });
