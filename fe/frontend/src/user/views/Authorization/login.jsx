@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { loginUser } from "../../../api/UserApi";
+import { loginUser, googleLogin } from "../../../api/UserApi";
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
 import MonQuaNhoImg from "../../assets/MonQuaNho.png";
+
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID; // Đảm bảo lấy đúng clientId từ biến môi trường
 
 const Login = () => {
     const [form, setForm] = useState({ email: "", password: "" });
@@ -14,13 +18,13 @@ const Login = () => {
         e.preventDefault();
         setError("");
         try {
-            const result = await loginUser(form);   
+            const result = await loginUser(form);
             // Lưu token và thông tin user vào localStorage
-            localStorage.setItem("token", result.token);
-            localStorage.setItem("role", result.user.role);
-            localStorage.setItem("user_id", result.user.id);
-            localStorage.setItem("fullname", result.user.fullname);
-            if (result.user.role === "admin") {
+            localStorage.setItem("token", result.data[0].token);
+            localStorage.setItem("role", result.data[0].role);
+            localStorage.setItem("user_id", result.data[0]._id);
+            localStorage.setItem("fullname", result.data[0].name);
+            if (result.data[0].role === "admin") {
                 navigate("/admin");
             } else {
                 navigate("/");
@@ -29,6 +33,24 @@ const Login = () => {
             setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
         }
     };
+
+    // Xử lý đăng nhập Google thành công
+    const handleGoogleSuccess = async (credentialResponse) => {
+        try {
+            const result = await googleLogin(credentialResponse.credential); // Gửi id_token lên backend
+            localStorage.setItem("token", result.data[0].token);
+            localStorage.setItem("fullname", result.data[0].name || "");
+            localStorage.setItem("role", "user");
+            navigate("/");
+        } catch (err) {
+            setError("Đăng nhập Google thất bại.");
+        }
+    };
+
+    const handleGoogleError = () => {
+        setError("Đăng nhập Google thất bại.");
+    };
+
 
     return (
         <div className="min-h-screen flex" style={{ background: "#F6F6F6" }}>
@@ -82,28 +104,13 @@ const Login = () => {
                         </button>
                     </form>
                     <div className="flex justify-center gap-2 mt-4 mb-2">
-                        <button
-                            type="button"
-                            className="flex-1 py-2 rounded-[20px] font-semibold text-white"
-                            style={{
-                                background: "#EA4335",
-                                fontSize: 15,
-                                minWidth: 110
-                            }}
-                        >
-                            Google
-                        </button>
-                        <button
-                            type="button"
-                            className="flex-1 py-2 rounded-[20px] font-semibold text-white"
-                            style={{
-                                background: "#1877F3",
-                                fontSize: 15,
-                                minWidth: 110
-                            }}
-                        >
-                            Facebook
-                        </button>
+                        <GoogleLogin
+                            clientId={CLIENT_ID} // Đảm bảo clientId được truyền đúng từ biến môi trường
+                            onSuccess={handleGoogleSuccess}
+                            onError={handleGoogleError}
+                            width="100%"
+                            locale="vi"
+                        />
                     </div>
                     <div className="text-center text-[15px] mt-2">
                         <span style={{ color: "#222" }}>Chưa có tài khoản? </span>

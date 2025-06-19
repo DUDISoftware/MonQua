@@ -21,19 +21,22 @@ const apiRequest = async (method, url, data = {}, token) => {
 };
 
 // Đăng ký người dùng mới
-export const registerUser = (userData) => apiRequest("post", "/users/register", userData);
+export const registerUser = (userData) => apiRequest("post", "/auth/register", userData);
 
 // Đăng nhập người dùng
-export const loginUser = (credentials) => apiRequest("post", "/users/login", credentials);
+export const loginUser = (credentials) => apiRequest("post", "/auth/login", credentials);
+
+// Đăng nhập bằng Google
+export const googleLogin = (tokenId) => apiRequest("post", "/auth/google-login", { id_token: tokenId }); // Đảm bảo gửi đúng id_token
 
 // Lấy danh sách người dùng
-export const getUsers = (token) => apiRequest("get", "/users/users-list", {}, token);
+export const getUsers = (token) => apiRequest("get", "/auth/users-list", {}, token);
 
 // Lấy chi tiết người dùng theo ID
-export const getUserById = (id, token) => apiRequest("get", `/users/user-detail/${id}`, {}, token);
+export const getUserById = (id, token) => apiRequest("get", `/auth/user-detail/${id}`, {}, token);
 
 // Cập nhật thông tin người dùng
-export const updateUser = (id, userData, token) => apiRequest("put", `/users/update-user/${id}`, userData, token);
+export const updateUser = (id, userData, token) => apiRequest("put", `/auth/update-user/${id}`, userData, token);
 
 // Xóa người dùng
-export const deleteUser = (id, token) => apiRequest("delete", `/users/delete-user/${id}`, {}, token);
+export const deleteUser = (id, token) => apiRequest("delete", `/auth/delete-user/${id}`, {}, token);
