@@ -23,7 +23,11 @@
     "mongodb": "^6.15.0",
     "mongoose": "^7.8.7",
     "mongoose-unique-validator": "^4.0.1",
+
+    "nodemailer": "^7.0.3"
+
     "multer": "^2.0.1",
     "multer-storage-cloudinary": "^4.0.0"
+
   }
 }

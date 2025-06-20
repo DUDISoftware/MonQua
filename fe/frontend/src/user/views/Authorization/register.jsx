@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import MonQuaNhoImg from "../../assets/MonQuaNho.png";
-// import { registerUser } from "../../../api/UserApi"; // Uncomment nếu có API
+import { registerUser } from "../../../api/UserApi"; // Sử dụng API để đăng ký
 
 const Register = () => {
     const [form, setForm] = useState({
-        fullname: "",
+        name: "",
         email: "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        phone: "" // Thêm trường số điện thoại
     });
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -24,15 +25,19 @@ const Register = () => {
             setError("Mật khẩu xác nhận không khớp.");
             return;
         }
-        // try {
-        //     await registerUser(form);
-        //     setSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
-        //     setTimeout(() => navigate("/login"), 1500);
-        // } catch {
-        //     setError("Đăng ký thất bại. Vui lòng thử lại.");
-        // }
-        setSuccess("Đăng ký thành công! Vui lòng đăng nhập."); // Demo
-        setTimeout(() => navigate("/login"), 1200);
+        try {
+            const userData = {
+                name: form.name,
+                email: form.email,
+                password: form.password,
+                phone: form.phone // Gửi số điện thoại lên backend
+            };
+            await registerUser(userData); // Gửi dữ liệu đăng ký lên backend
+            setSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
+            setTimeout(() => navigate("/login"), 1500);
+        } catch (err) {
+            setError("Đăng ký thất bại. Vui lòng thử lại.");
+        }
     };
 
     return (
@@ -51,9 +56,9 @@ const Register = () => {
                     </div>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <input
-                            name="fullname"
+                            name="name"
                             type="text"
-                            value={form.fullname}
+                            value={form.name}
                             onChange={handleChange}
                             required
                             className="w-full px-4 py-2 rounded-[8px] border border-[#D9D9D9] bg-white focus:outline-none focus:border-[#43B02A] text-base shadow-sm"
@@ -68,6 +73,15 @@ const Register = () => {
                             required
                             className="w-full px-4 py-2 rounded-[8px] border border-[#D9D9D9] bg-white focus:outline-none focus:border-[#43B02A] text-base shadow-sm"
                             placeholder="Email"
+                            style={{ color: "#222", fontSize: 16 }}
+                        />
+                        <input
+                            name="phone"
+                            type="text"
+                            value={form.phone}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 rounded-[8px] border border-[#D9D9D9] bg-white focus:outline-none focus:border-[#43B02A] text-base shadow-sm"
+                            placeholder="Số điện thoại (tùy chọn)"
                             style={{ color: "#222", fontSize: 16 }}
                         />
                         <input
@@ -104,30 +118,6 @@ const Register = () => {
                             Đăng ký
                         </button>
                     </form>
-                    <div className="flex justify-center gap-2 mt-4 mb-2">
-                        <button
-                            type="button"
-                            className="flex-1 py-2 rounded-[20px] font-semibold text-white"
-                            style={{
-                                background: "#EA4335",
-                                fontSize: 15,
-                                minWidth: 110
-                            }}
-                        >
-                            Google
-                        </button>
-                        <button
-                            type="button"
-                            className="flex-1 py-2 rounded-[20px] font-semibold text-white"
-                            style={{
-                                background: "#1877F3",
-                                fontSize: 15,
-                                minWidth: 110
-                            }}
-                        >
-                            Facebook
-                        </button>
-                    </div>
                     <div className="text-center text-[15px] mt-2">
                         <span style={{ color: "#222" }}>Đã có tài khoản? </span>
                         <Link to="/login" className="font-semibold" style={{ color: "#43B02A" }}>
