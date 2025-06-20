@@ -4,6 +4,9 @@ const verifyToken = require("../middleware/VerifyToken.middleware");
 const checkRole = require("../middleware/checkRole.middleware");
 const { checkMultiRole } = require("../middleware/checkRole.middleware");
 const userService = require("../services/user.Service");
+const UserOtp = require("../models/auth/user_otp.model");
+const bcrypt = require("bcryptjs");
+const sendMail = require("../utils/sendMail"); // Utility for sending emails
 
 // Đăng ký bằng email/password
 router.post("/register", async (req, res) => {
@@ -216,6 +219,66 @@ router.delete("/delete-user/:id", verifyToken, checkRole("admin"), async (req, r
             data_name: "Xóa người dùng",
             data: []
         });
+    }
+});
+
+// Gửi OTP về email và lưu mật khẩu mới tạm thời
+router.post("/send-reset-otp", async (req, res) => {
+    try {
+        const { email, new_password } = req.body;
+        const user = await userService.getUserByEmail(email);
+        if (!user) {
+            return res.status(404).json({ error: 404, error_text: "Email không tồn tại!" });
+        }
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const hashedPassword = await bcrypt.hash(new_password, 10);
+
+        await UserOtp.create({
+            user_id: user._id,
+            otp_code: otp,
+            type: "reset",
+            expires_at: new Date(Date.now() + 10 * 60 * 1000), // 10 phút
+            used: false,
+            temp_password: hashedPassword, // Lưu mật khẩu mới tạm thời
+        });
+
+        await sendMail(email, `Mã OTP đổi mật khẩu của bạn là: ${otp}`);
+        return res.json({ error: 0, error_text: "Đã gửi OTP về email!" });
+    } catch (err) {
+        console.error("Lỗi gửi OTP:", err.message);
+        return res.status(500).json({ error: 500, error_text: "Lỗi server!" });
+    }
+});
+
+// Xác nhận OTP và cập nhật mật khẩu mới
+router.post("/confirm-reset", async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+        const user = await userService.getUserByEmail(email);
+        if (!user) {
+            return res.status(404).json({ error: 404, error_text: "Email không tồn tại!" });
+        }
+
+        const otpRecord = await UserOtp.findOne({
+            user_id: user._id,
+            otp_code: otp,
+            type: "reset",
+            used: false,
+            expires_at: { $gt: new Date() },
+        });
+
+        if (!otpRecord) {
+            return res.status(400).json({ error: 400, error_text: "OTP không hợp lệ hoặc đã hết hạn!" });
+        }
+
+        await userService.updateUser(user._id, { password_hash: otpRecord.temp_password });
+        await UserOtp.findByIdAndUpdate(otpRecord._id, { used: true });
+
+        return res.json({ error: 0, error_text: "Đổi mật khẩu thành công!" });
+    } catch (err) {
+        console.error("Lỗi đổi mật khẩu:", err.message);
+        return res.status(500).json({ error: 500, error_text: "Lỗi server!" });
     }
 });
 
