@@ -8,15 +8,18 @@ router.post("/create", async (req, res) => {
         const contactData = req.body;
         const newContact = await contactService.createContact(contactData);
         return res.status(201).json({
-            status: true,
-            message: "Yêu cầu liên hệ đã được tạo thành công!",
-            data: newContact,
+            error: 0,
+            error_text: "Yêu cầu liên hệ đã được tạo thành công!",
+            data_name: "Yêu cầu liên hệ",
+            data: [newContact],
         });
     } catch (error) {
         console.error("Lỗi tạo yêu cầu liên hệ:", error.message);
         return res.status(500).json({
-            status: false,
-            message: "Lỗi server!",
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Yêu cầu liên hệ",
+            data: [],
         });
     }
 });
@@ -26,15 +29,18 @@ router.get("/list", async (req, res) => {
     try {
         const contacts = await contactService.getAllContacts();
         return res.status(200).json({
-            status: true,
-            message: "Lấy danh sách yêu cầu liên hệ thành công!",
+            error: 0,
+            error_text: "Lấy danh sách yêu cầu liên hệ thành công!",
+            data_name: "Danh sách yêu cầu liên hệ",
             data: contacts,
         });
     } catch (error) {
         console.error("Lỗi lấy danh sách yêu cầu liên hệ:", error.message);
         return res.status(500).json({
-            status: false,
-            message: "Lỗi server!",
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Danh sách yêu cầu liên hệ",
+            data: [],
         });
     }
 });
@@ -47,20 +53,25 @@ router.put("/update/:id", async (req, res) => {
         const updatedContact = await contactService.updateContact(contactId, updateData);
         if (!updatedContact) {
             return res.status(404).json({
-                status: false,
-                message: "Yêu cầu liên hệ không tồn tại!",
+                error: 404,
+                error_text: "Yêu cầu liên hệ không tồn tại!",
+                data_name: "Yêu cầu liên hệ",
+                data: [],
             });
         }
         return res.status(200).json({
-            status: true,
-            message: "Cập nhật yêu cầu liên hệ thành công!",
-            data: updatedContact,
+            error: 0,
+            error_text: "Cập nhật yêu cầu liên hệ thành công!",
+            data_name: "Yêu cầu liên hệ",
+            data: [updatedContact],
         });
     } catch (error) {
         console.error("Lỗi cập nhật yêu cầu liên hệ:", error.message);
         return res.status(500).json({
-            status: false,
-            message: "Lỗi server!",
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Yêu cầu liên hệ",
+            data: [],
         });
     }
 });
@@ -72,19 +83,25 @@ router.delete("/delete/:id", async (req, res) => {
         const deletedContact = await contactService.deleteContact(contactId);
         if (!deletedContact) {
             return res.status(404).json({
-                status: false,
-                message: "Yêu cầu liên hệ không tồn tại!",
+                error: 404,
+                error_text: "Yêu cầu liên hệ không tồn tại!",
+                data_name: "Yêu cầu liên hệ",
+                data: [],
             });
         }
         return res.status(200).json({
-            status: true,
-            message: "Xóa yêu cầu liên hệ thành công!",
+            error: 0,
+            error_text: "Xóa yêu cầu liên hệ thành công!",
+            data_name: "Yêu cầu liên hệ",
+            data: [],
         });
     } catch (error) {
         console.error("Lỗi xóa yêu cầu liên hệ:", error.message);
         return res.status(500).json({
-            status: false,
-            message: "Lỗi server!",
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Yêu cầu liên hệ",
+            data: [],
         });
     }
 });

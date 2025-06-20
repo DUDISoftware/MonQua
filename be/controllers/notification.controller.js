@@ -8,15 +8,18 @@ router.post("/create", async (req, res) => {
         const notificationData = req.body;
         const newNotification = await notificationService.createNotification(notificationData);
         return res.status(201).json({
-            status: true,
-            message: "Thông báo đã được tạo thành công!",
-            data: newNotification,
+            error: 0,
+            error_text: "Thông báo đã được tạo thành công!",
+            data_name: "Thông báo",
+            data: [newNotification],
         });
     } catch (error) {
         console.error("Lỗi tạo thông báo:", error.message);
         return res.status(500).json({
-            status: false,
-            message: "Lỗi server!",
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Thông báo",
+            data: [],
         });
     }
 });
@@ -26,15 +29,18 @@ router.get("/list", async (req, res) => {
     try {
         const notifications = await notificationService.getAllNotifications();
         return res.status(200).json({
-            status: true,
-            message: "Lấy danh sách thông báo thành công!",
+            error: 0,
+            error_text: "Lấy danh sách thông báo thành công!",
+            data_name: "Danh sách thông báo",
             data: notifications,
         });
     } catch (error) {
         console.error("Lỗi lấy danh sách thông báo:", error.message);
         return res.status(500).json({
-            status: false,
-            message: "Lỗi server!",
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Danh sách thông báo",
+            data: [],
         });
     }
 });
@@ -47,20 +53,25 @@ router.put("/update/:id", async (req, res) => {
         const updatedNotification = await notificationService.updateNotification(notificationId, updateData);
         if (!updatedNotification) {
             return res.status(404).json({
-                status: false,
-                message: "Thông báo không tồn tại!",
+                error: 404,
+                error_text: "Thông báo không tồn tại!",
+                data_name: "Thông báo",
+                data: [],
             });
         }
         return res.status(200).json({
-            status: true,
-            message: "Cập nhật thông báo thành công!",
-            data: updatedNotification,
+            error: 0,
+            error_text: "Cập nhật thông báo thành công!",
+            data_name: "Thông báo",
+            data: [updatedNotification],
         });
     } catch (error) {
         console.error("Lỗi cập nhật thông báo:", error.message);
         return res.status(500).json({
-            status: false,
-            message: "Lỗi server!",
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Thông báo",
+            data: [],
         });
     }
 });
@@ -72,19 +83,25 @@ router.delete("/delete/:id", async (req, res) => {
         const deletedNotification = await notificationService.deleteNotification(notificationId);
         if (!deletedNotification) {
             return res.status(404).json({
-                status: false,
-                message: "Thông báo không tồn tại!",
+                error: 404,
+                error_text: "Thông báo không tồn tại!",
+                data_name: "Thông báo",
+                data: [],
             });
         }
         return res.status(200).json({
-            status: true,
-            message: "Xóa thông báo thành công!",
+            error: 0,
+            error_text: "Xóa thông báo thành công!",
+            data_name: "Thông báo",
+            data: [],
         });
     } catch (error) {
         console.error("Lỗi xóa thông báo:", error.message);
         return res.status(500).json({
-            status: false,
-            message: "Lỗi server!",
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Thông báo",
+            data: [],
         });
     }
 });

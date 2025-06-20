@@ -8,13 +8,19 @@ router.post("/conversations/create", async (req, res) => {
         const { userIds } = req.body; // [userId1, userId2]
         const conversation = await messengerService.createConversation(userIds);
         return res.status(201).json({
-            status: true,
-            message: "Tạo hội thoại thành công!",
-            data: conversation,
+            error: 0,
+            error_text: "Tạo hội thoại thành công!",
+            data_name: "Hội thoại",
+            data: [conversation],
         });
     } catch (error) {
         console.error("Lỗi tạo hội thoại:", error.message);
-        return res.status(500).json({ status: false, message: "Lỗi server!" });
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Hội thoại",
+            data: [],
+        });
     }
 });
 
@@ -24,13 +30,19 @@ router.get("/conversations/user/:userId", async (req, res) => {
         const userId = req.params.userId;
         const conversations = await messengerService.getUserConversations(userId);
         return res.status(200).json({
-            status: true,
-            message: "Lấy danh sách hội thoại thành công!",
+            error: 0,
+            error_text: "Lấy danh sách hội thoại thành công!",
+            data_name: "Danh sách hội thoại",
             data: conversations,
         });
     } catch (error) {
         console.error("Lỗi lấy danh sách hội thoại:", error.message);
-        return res.status(500).json({ status: false, message: "Lỗi server!" });
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Danh sách hội thoại",
+            data: [],
+        });
     }
 });
 
@@ -40,13 +52,19 @@ router.post("/messages/send", async (req, res) => {
         const messageData = req.body;
         const message = await messengerService.sendMessage(messageData);
         return res.status(201).json({
-            status: true,
-            message: "Gửi tin nhắn thành công!",
-            data: message,
+            error: 0,
+            error_text: "Gửi tin nhắn thành công!",
+            data_name: "Tin nhắn",
+            data: [message],
         });
     } catch (error) {
         console.error("Lỗi gửi tin nhắn:", error.message);
-        return res.status(500).json({ status: false, message: "Lỗi server!" });
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Tin nhắn",
+            data: [],
+        });
     }
 });
 
@@ -56,13 +74,19 @@ router.get("/messages/conversation/:conversationId", async (req, res) => {
         const conversationId = req.params.conversationId;
         const messages = await messengerService.getMessagesByConversation(conversationId);
         return res.status(200).json({
-            status: true,
-            message: "Lấy tin nhắn thành công!",
+            error: 0,
+            error_text: "Lấy tin nhắn thành công!",
+            data_name: "Tin nhắn hội thoại",
             data: messages,
         });
     } catch (error) {
         console.error("Lỗi lấy tin nhắn:", error.message);
-        return res.status(500).json({ status: false, message: "Lỗi server!" });
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Tin nhắn hội thoại",
+            data: [],
+        });
     }
 });
 
@@ -72,13 +96,19 @@ router.put("/messages/read/:messageId", async (req, res) => {
         const messageId = req.params.messageId;
         const updated = await messengerService.markMessageAsRead(messageId);
         return res.status(200).json({
-            status: true,
-            message: "Đã đánh dấu đã đọc!",
-            data: updated,
+            error: 0,
+            error_text: "Đã đánh dấu đã đọc!",
+            data_name: "Tin nhắn đã đọc",
+            data: [updated],
         });
     } catch (error) {
         console.error("Lỗi đánh dấu đã đọc:", error.message);
-        return res.status(500).json({ status: false, message: "Lỗi server!" });
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi server!",
+            data_name: "Tin nhắn đã đọc",
+            data: [],
+        });
     }
 });
 
