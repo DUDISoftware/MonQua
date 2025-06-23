@@ -13,4 +13,14 @@ router.post(
 );
 
 
+router.put("/:id/status", productController.updateProductStatus);
+
+// Lấy danh sách sản phẩm
+router.get("/", productController.getAllProducts);
+
+// Lấy chi tiết sản phẩm theo ID
+router.get("/:id", productController.getProductById);
+// Lấy dsach sản phẩm theo user
+router.get("/user/:userId", productController.getProductsByUser);
+
 module.exports = router;
