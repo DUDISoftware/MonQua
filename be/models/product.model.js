@@ -4,7 +4,7 @@ const productSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   title: { type: String, required: true },
   description: String,
-  category_id: { type: mongoose.Schema.Types.ObjectId, ref: "product_categories" },
+  category_id: { type: mongoose.Schema.Types.ObjectId, ref: "Category" }, // Đúng tên model
   image_url: String,
   location: String,
   is_heavy: Boolean,
@@ -16,5 +16,6 @@ const productSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
 });
+
 
 module.exports = mongoose.model("Product", productSchema);

@@ -54,3 +54,75 @@ exports.createProduct = async (req, res) => {
     res.status(500).json({ message: "Lỗi khi tạo sản phẩm", error: err.message });
   }
 };
+// PUT /api/products/:id/status
+exports.updateProductStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const allowedStatuses = ["pending", "active", "given", "hidden"];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: "Trạng thái không hợp lệ" });
+    }
+
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      { status, updated_at: new Date() },
+      { new: true }
+    );
+
+    if (!product) {
+      return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
+    }
+
+    res.json({
+      message: "Cập nhật trạng thái thành công",
+      product
+    });
+  } catch (err) {
+    console.error("Lỗi khi cập nhật trạng thái:", err.message);
+    res.status(500).json({ message: "Lỗi khi cập nhật trạng thái", error: err.message });
+  }
+};
+// Lấy danh sách tất cả sản phẩm
+exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find()
+      .populate("category_id")
+      .populate("user_id");
+
+    res.json(products);
+  } catch (err) {
+    console.error("Lỗi khi lấy danh sách sản phẩm:", err.message);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
+
+// Lấy chi tiết sản phẩm theo ID
+exports.getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id)
+      .populate("category_id")
+      .populate("user_id");
+
+    if (!product) {
+      return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
+    }
+
+    res.json(product);
+  } catch (err) {
+    console.error("Lỗi khi lấy chi tiết sản phẩm:", err.message);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
+exports.getProductsByUser = async (req, res) => {
+  try {
+    const products = await Product.find({ user_id: req.params.userId })
+      .populate("category_id")
+      .sort({ created_at: -1 });
+
+    res.json(products);
+  } catch (err) {
+    console.error("Lỗi khi lấy danh sách sản phẩm của người dùng:", err.message);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
