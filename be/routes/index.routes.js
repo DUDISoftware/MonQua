@@ -10,6 +10,7 @@ const messengerRouter = require("../controllers/messenger.controller");
 // Mount toàn bộ router của controller vào /auth
 router.use("/auth", authRouter);
 
+
 // Mount toàn bộ router của controller vào /contact
 router.use("/contact", contactRouter);
 
@@ -25,4 +26,9 @@ router.use("/community", communityRouter);
 // Mount toàn bộ router của controller vào /messenger
 router.use("/messenger", messengerRouter);
 
-module.exports = router;
+// Route cho sản phẩm
+router.use("/products", require("./product.route"));
+
+// Route cho danh mục sản phẩm
+router.use("/categories", require("./category.route"));
+
