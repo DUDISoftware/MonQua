@@ -26,7 +26,6 @@ router.use("/community", communityRouter);
 // Mount toàn bộ router của controller vào /messenger
 router.use("/messenger", messengerRouter);
 
-
 // Route cho sản phẩm
 router.use("/products", require("./product.route"));
 
