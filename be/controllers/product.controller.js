@@ -2,6 +2,12 @@ const Product = require("../models/product.model");
 const User = require("../models/auth/user.model");
 
 exports.createProduct = async (req, res) => {
+  console.log("=== Dữ liệu req.body ===");
+console.log(req.body);
+
+console.log("=== Dữ liệu req.file ===");
+console.log(req.file);
+
   try {
     // Kiểm tra nếu không có body
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -50,9 +56,10 @@ exports.createProduct = async (req, res) => {
       product: saved
     });
   } catch (err) {
-    console.error("Lỗi khi tạo sản phẩm:", err.message);
-    res.status(500).json({ message: "Lỗi khi tạo sản phẩm", error: err.message });
-  }
+  console.error("Lỗi khi tạo sản phẩm:", err);
+  res.status(500).json({ message: "Lỗi khi tạo sản phẩm", error: err.message });
+}
+
 };
 // PUT /api/products/:id/status
 exports.updateProductStatus = async (req, res) => {
