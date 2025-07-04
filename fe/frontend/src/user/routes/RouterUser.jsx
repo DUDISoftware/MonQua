@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Home from "../views/Home/FullHome";
@@ -34,30 +34,28 @@ const AuthLayout = () => (
 );
 
 const RouterUser = () => (
-    <BrowserRouter>
-        <Routes>
-            {/* Auth routes: không có header/footer */}
-            <Route element={<AuthLayout />}>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-            </Route>
-            {/* Main layout: có header/footer */}
-            <Route element={<Layout />}>
-                <Route path="/" element={<Home />} />
-                {/* Thêm các route khác ở đây */}
-                <Route path="/roadmap" element={<Roadmap />} />
-                <Route path="/contact" element={<FullContactSection />} />
-                <Route path="/products" element={<ProductListingPage />} />
-                <Route path="/products/:id" element={<ProductDetailPage />} />
-                <Route path="/community" element={<CommunityPage />} />
-                <Route path="/messenger" element={<MessengerPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/profile/setting" element={<ProfileSettingPage />} />
-                <Route path="/programs" element={<CharityProgramsPage />} />
-                <Route path="/post-gift" element={<PostGiftPage />} />
-            </Route>
-        </Routes>
-    </BrowserRouter>
+    <Routes>
+        {/* Auth routes: không có header/footer */}
+        <Route element={<AuthLayout />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+        </Route>
+        {/* Main layout: có header/footer */}
+        <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            {/* Thêm các route khác ở đây */}
+            <Route path="/roadmap" element={<Roadmap />} />
+            <Route path="/contact" element={<FullContactSection />} />
+            <Route path="/products" element={<ProductListingPage />} />
+            <Route path="/products/:id" element={<ProductDetailPage />} />
+            <Route path="/community" element={<CommunityPage />} />
+            <Route path="/messenger" element={<MessengerPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/setting" element={<ProfileSettingPage />} />
+            <Route path="/programs" element={<CharityProgramsPage />} />
+            <Route path="/post-gift" element={<PostGiftPage />} />
+        </Route>
+    </Routes>
 );
 
 export default RouterUser;

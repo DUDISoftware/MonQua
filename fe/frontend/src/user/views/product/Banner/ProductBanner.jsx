@@ -3,7 +3,7 @@ import React from "react";
 const ProductBanner = () => (
     <div className="w-full rounded-xl overflow-hidden mb-6 flex items-center bg-gradient-to-r from-green-100 to-blue-100 px-6 py-6">
         <img
-            src="https://cdn.sstatic.net/Img/home/illo-freegifts.png"
+            src="https://res.cloudinary.com/dvnsihl8y/image/upload/v1748229758/products/main/qv6kkznpo2axguxkmehz.png"
             alt="Banner"
             className="h-20 w-20 object-contain mr-6"
         />
