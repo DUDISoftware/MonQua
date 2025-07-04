@@ -32,3 +32,4 @@ router.use("/products", require("./product.route"));
 // Route cho danh mục sản phẩm
 router.use("/categories", require("./category.route"));
 
+module.exports = router;
