@@ -23,4 +23,5 @@ router.use("/products", require("./product.route"));
 router.use("/categories", require("./category.route"));
 router.use("/chat", chatRouter); // ✅ Truyền router vào
 
+
 module.exports = router;

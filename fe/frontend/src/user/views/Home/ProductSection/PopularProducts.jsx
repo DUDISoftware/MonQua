@@ -4,7 +4,7 @@ import ProductList from "./ProductList";
 const products = Array.from({ length: 10 }).map((_, i) => ({
     id: i + 1,
     name: "Áo sơ mi nam",
-    image: "https://cdn.sstatic.net/Img/home/illo-freegifts.png",
+    image: "https://product.hstatic.net/200000053174/product/9smdh555den_346858ac9cd84c909455c3b7f93f1917_master.jpg",
     status: "Còn mới 90%",
     desc: "Cổ gài sạch sẽ.",
     location: "Q1, TPHCM",
