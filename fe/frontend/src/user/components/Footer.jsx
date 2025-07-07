@@ -3,9 +3,9 @@ import { FaHome, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaFacebookF, FaLinkedin
 
 const Footer = () => (
   <footer className="bg-[#EEF8F1] border-t border-[#EEF8F1] pt-8 pb-4 w-full">
-    <div className="container w-full grid grid-cols-1 md:grid-cols-3 gap-8 px-2 sm:px-4 justify-center items-center mx-auto">
+    <div className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-10 px-4 sm:px-6 lg:px-8">
       {/* Liên Hệ */}
-      <div className="text-center md:text-left flex flex-col items-center md:items-start w-full">
+      <div className="text-center md:text-left flex flex-col items-center md:items-start">
         <h3 className="text-xl font-bold mb-4 text-[#4CAF50]">Liên Hệ</h3>
         <ul className="space-y-2 text-[#222] text-[15px]">
           <li className="flex items-start gap-2">
@@ -14,7 +14,7 @@ const Footer = () => (
           </li>
           <li className="flex items-start gap-2">
             <FaMapMarkerAlt className="mt-1 text-[#4CAF50]" />
-            <span>232 Nguyễn Thị Minh Khai, Phường Võ Thị Sáu, Quận 3, Thành phố Hồ Chí Minh, Việt Nam</span>
+            <span>232 Nguyễn Thị Minh Khai, Phường Võ Thị Sáu, Quận 3, TP.HCM, Việt Nam</span>
           </li>
           <li className="flex items-center gap-2">
             <FaPhoneAlt className="text-[#4CAF50]" />
@@ -25,8 +25,9 @@ const Footer = () => (
             <span>dudisoftware@gmail.com</span>
           </li>
         </ul>
+
         {/* Đăng ký email */}
-        <form className="flex flex-col sm:flex-row gap-2 mt-6">
+        <form className="flex flex-col sm:flex-row gap-2 mt-6 w-full max-w-sm">
           <input
             type="email"
             placeholder="Email"
@@ -39,15 +40,17 @@ const Footer = () => (
             Đăng ký
           </button>
         </form>
+
         {/* Social icons */}
-        <div className="flex gap-4 mt-6 justify-center sm:justify-start">
+        <div className="flex gap-4 mt-6 justify-center md:justify-start">
           <a href="#" className="text-[#4CAF50] hover:text-[#388E3C] text-xl transition"><FaFacebookF /></a>
           <a href="#" className="text-[#4CAF50] hover:text-[#388E3C] text-xl transition"><FaLinkedinIn /></a>
           <a href="#" className="text-[#4CAF50] hover:text-[#388E3C] text-xl transition"><FaInstagram /></a>
         </div>
       </div>
+
       {/* Dịch Vụ */}
-      <div className="mt-8 md:mt-0 text-center md:text-left flex flex-col items-center md:items-start w-full">
+      <div className="text-center md:text-left flex flex-col items-center md:items-start">
         <h3 className="text-xl font-bold mb-4 text-[#4CAF50]">Dịch Vụ</h3>
         <ul className="space-y-2 text-[#222] text-[15px]">
           <li>Lập trình máy tính</li>
@@ -56,10 +59,11 @@ const Footer = () => (
           <li>Hoạt động thiết kế chuyên ngành</li>
         </ul>
       </div>
+
       {/* Địa Chỉ */}
-      <div className="mt-8 md:mt-0 text-center md:text-left flex flex-col items-center md:items-start w-full">
+      <div className="text-center md:text-left flex flex-col items-center md:items-start">
         <h3 className="text-xl font-bold mb-4 text-[#4CAF50]">Địa Chỉ</h3>
-        <div className="rounded-lg overflow-hidden border border-[#D6F5E3] w-full h-40 mx-auto">
+        <div className="rounded-lg overflow-hidden border border-[#D6F5E3] w-full h-40 max-w-sm">
           <iframe
             title="DUDI Map"
             src="https://www.google.com/maps?q=232+Nguyễn+Thị+Minh+Khai,+Phường+Võ+Thị+Sáu,+Quận+3,+Thành+phố+Hồ+Chí+Minh,+Việt+Nam&output=embed"
@@ -72,7 +76,9 @@ const Footer = () => (
         </div>
       </div>
     </div>
-    <div className="container w-full text-center text-[#4CAF50] text-xs mt-8 px-2 sm:px-4 mx-auto font-semibold">
+
+    {/* Bản quyền */}
+    <div className="max-w-screen-xl mx-auto text-center text-[#4CAF50] text-xs mt-8 px-4 sm:px-6 lg:px-8 font-semibold">
       © {new Date().getFullYear()} CÔNG TY TNHH CÔNG NGHỆ PHẦN MỀM DUDI. All rights reserved.
     </div>
   </footer>
