@@ -23,3 +23,7 @@ const apiRequest = async (method, url, data = {}, token) => {
 export const getProductsByUser = async (userId) => {
   return await apiRequest("get", `/products/user/${userId}`);
 };
+// Lấy chi tiết sản phẩm theo ID
+export const getProductById = async (id) => {
+  return await apiRequest("get", `/products/${id}`);
+};
