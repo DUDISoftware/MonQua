@@ -7,6 +7,7 @@ const UserCard = () => {
     role: "",
     phone: "",
     avatar_url: "",
+    verified: false
   });
 
   useEffect(() => {
@@ -14,9 +15,11 @@ const UserCard = () => {
     const role = localStorage.getItem("role") || "user";
     const phone = localStorage.getItem("phone") || "Không có số";
     const avatar_url = localStorage.getItem("avatar_url") || "https://randomuser.me/api/portraits/men/32.jpg";
+    const verified = localStorage.getItem("verified") === "true"; // Convert string to boolean
 
-    setUser({ fullname, role, phone, avatar_url });
+    setUser({ fullname, role, phone, avatar_url, verified });
   }, []);
+
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-6 flex flex-col items-center mb-6 shadow-sm">
@@ -26,9 +29,11 @@ const UserCard = () => {
         className="w-20 h-20 rounded-full object-cover mb-2 border-4 border-[#22C55E]"
       />
       <div className="font-bold text-lg text-[#17805C] mb-1">{user.fullname}</div>
-      <span className="bg-[#E6F4E6] text-[#22C55E] px-3 py-1 rounded-full text-xs font-medium mb-2">
-        {user.role === "user" ? "Người dùng" : "Quản lý"}
+      <span className={`px-3 py-1 rounded-full text-xs font-medium mb-2 ${user.verified ? "bg-[#E6F4E6] text-[#22C55E]" : "bg-yellow-100 text-yellow-700"
+        }`}>
+        {user.verified ? "Đã xác thực" : "Chưa xác thực"}
       </span>
+
       <div className="text-xs text-gray-500 mb-4">
         Số điện thoại: {user.phone.replace(/(\d{4})(\d{3})(\d{3})/, "$1 *** $3")}
       </div>

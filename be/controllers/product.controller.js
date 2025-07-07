@@ -22,7 +22,8 @@ console.log(req.file);
       location,
       contact_phone,
       contact_zalo,
-      is_heavy
+      is_heavy,
+      delivery_method = "giao_tan_tay", // Mặc định là giao tận tay
     } = req.body;
 
     // Kiểm tra user tồn tại
@@ -46,7 +47,8 @@ console.log(req.file);
       image_url,
       status: "pending",
       created_at: new Date(),
-      updated_at: new Date()
+      updated_at: new Date(),
+      delivery_method,
     });
 
     const saved = await newProduct.save();

@@ -139,6 +139,8 @@ exports.loginUser = async (credentials, requestInfo) => {
             email: user.email,
             name: user.name,
             role: user.role,
+            phone: user.phone, // thêm dòng này
+            verified: user.verified, // <-- thêm dòng này
             token
         };
     } catch (error) {

@@ -24,6 +24,9 @@ const Login = () => {
             localStorage.setItem("role", result.data[0].role);
             localStorage.setItem("user_id", result.data[0]._id);
             localStorage.setItem("fullname", result.data[0].name);
+            localStorage.setItem("phone", result.data[0].phone || ""); // thêm dòng này
+            localStorage.setItem("verified", result.data[0].verified); // <-- thêm dòng này
+            localStorage.setItem("token", result.data[0].token);
             if (result.data[0].role === "admin") {
                 navigate("/admin/dashboard");
             } else {
@@ -40,7 +43,9 @@ const Login = () => {
             const result = await googleLogin(credentialResponse.credential); // Gửi id_token lên backend
             localStorage.setItem("token", result.data[0].token);
             localStorage.setItem("fullname", result.data[0].name || "");
+            localStorage.setItem("phone", result.data[0].phone || ""); // thêm dòng này
             localStorage.setItem("role", "user");
+
             navigate("/");
         } catch (err) {
             setError("Đăng nhập Google thất bại.");
