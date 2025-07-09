@@ -3,10 +3,10 @@ const User = require("../models/auth/user.model");
 
 exports.createProduct = async (req, res) => {
   console.log("=== Dữ liệu req.body ===");
-console.log(req.body);
+  console.log(req.body);
 
-console.log("=== Dữ liệu req.file ===");
-console.log(req.file);
+  console.log("=== Dữ liệu req.file ===");
+  console.log(req.file);
 
   try {
     // Kiểm tra nếu không có body
@@ -58,9 +58,9 @@ console.log(req.file);
       product: saved
     });
   } catch (err) {
-  console.error("Lỗi khi tạo sản phẩm:", err);
-  res.status(500).json({ message: "Lỗi khi tạo sản phẩm", error: err.message });
-}
+    console.error("Lỗi khi tạo sản phẩm:", err);
+    res.status(500).json({ message: "Lỗi khi tạo sản phẩm", error: err.message });
+  }
 
 };
 // PUT /api/products/:id/status
@@ -112,10 +112,15 @@ exports.getAllProducts = async (req, res) => {
     res.status(500).json({ message: "Lỗi server" });
   }
 };
-
 // Lấy chi tiết sản phẩm theo ID
 exports.getProductById = async (req, res) => {
   try {
+    // Tăng view_count trước khi lấy sản phẩm
+    await Product.findByIdAndUpdate(req.params.id, {
+      $inc: { view_count: 1 }
+    });
+
+    // Lấy sản phẩm kèm thông tin liên quan
     const product = await Product.findById(req.params.id)
       .populate("category_id")
       .populate("user_id");
@@ -130,10 +135,12 @@ exports.getProductById = async (req, res) => {
     res.status(500).json({ message: "Lỗi server" });
   }
 };
+
 exports.getProductsByUser = async (req, res) => {
   try {
     const products = await Product.find({ user_id: req.params.userId })
       .populate("category_id")
+      .populate("user_id") // <-- Thêm dòng này nếu cần
       .sort({ created_at: -1 });
 
     res.json(products);

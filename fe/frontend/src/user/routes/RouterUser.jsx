@@ -15,6 +15,7 @@ import ProfilePage from "../views/Profile/ProfilePage";
 import ProfileSettingPage from "../views/ProfileSetting/ProfileSettingPage";
 import CharityProgramsPage from "../views/CharityPrograms/CharityProgramsPage";
 import PostGiftPage from "../views/PostGift/index";
+import UserProfilePage from "../views/Profile/UserProfile/UserProfilePage";
 
 const Layout = () => (
     <>
@@ -54,6 +55,8 @@ const RouterUser = () => (
             <Route path="/profile/setting" element={<ProfileSettingPage />} />
             <Route path="/programs" element={<CharityProgramsPage />} />
             <Route path="/post-gift" element={<PostGiftPage />} />
+            <Route path="/user/:userId" element={<UserProfilePage />} />
+
         </Route>
     </Routes>
 );
