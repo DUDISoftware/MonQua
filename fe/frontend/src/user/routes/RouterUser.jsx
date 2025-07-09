@@ -15,7 +15,7 @@ import ProfilePage from "../views/Profile/ProfilePage";
 import ProfileSettingPage from "../views/ProfileSetting/ProfileSettingPage";
 import CharityProgramsPage from "../views/CharityPrograms/CharityProgramsPage";
 import PostGiftPage from "../views/PostGift/index";
-import UserProfilePage from "../views/Profile/UserProfile/UserProfilePage";
+import UserProfilePage from "../views/UserProfile/UserProfilePage";
 
 const Layout = () => (
     <>

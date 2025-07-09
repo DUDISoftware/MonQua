@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getProductsByUser } from "../../../../api/productApi";
+import { getProductsByUser } from "../../../api/productApi";
 import UserTabProductList from "./UserTabProductList"; // 👈 sử dụng component mới
 import UserDifferent from "./UserDifferent";
 
