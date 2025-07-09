@@ -27,3 +27,15 @@ export const getProductsByUser = async (userId) => {
 export const getProductById = async (id) => {
   return await apiRequest("get", `/products/${id}`);
 };
+// productApi.js
+export const getPopularProducts = async () => {
+  return await apiRequest("get", "/products/popular");
+};
+// Lấy sản phẩm theo ID danh mục
+export const getProductsByCategory = async (categoryId) => {
+  return await apiRequest("get", `/products?category=${categoryId}`);
+};
+export const getAllProducts = async () => {
+  return await apiRequest("get", "/products");
+};
+
