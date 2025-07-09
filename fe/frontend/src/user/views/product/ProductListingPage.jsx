@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProductBanner from "./Banner/ProductBanner";
 import SearchBar from "./SearchFilter/SearchBar";
 import FilterBar from "./SearchFilter/FilterBar";
@@ -7,36 +7,77 @@ import ProductReviews from "./Sidebar/ProductReviews";
 import FeaturedPosts from "./Sidebar/FeaturedPosts";
 import ProductTags from "./Sidebar/ProductTags";
 import Pagination from "./Pagination/Pagination";
+import { getAllProducts } from "../../../api/productApi";
 
-const demoProducts = Array.from({ length: 20 }).map((_, i) => ({
-    id: i + 1,
-    name: "Áo sơ mi nam",
-    image: "https://product.hstatic.net/200000053174/product/9smdh555den_346858ac9cd84c909455c3b7f93f1917_master.jpg",
-    status: "Còn mới 90%",
-    desc: "Cổ gài sạch sẽ.",
-    location: "Q1, TPHCM",
-    label: i % 2 === 0 ? "Sẵn sàng" : "Mới",
-}));
+const PAGE_SIZE = 12;
 
 const ProductListingPage = () => {
-    const [page, setPage] = useState(1);
+  const [products, setProducts] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [page, setPage] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-    return (
-        <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-6 flex flex-col md:flex-row gap-8">
-            <div className="flex-1">
-                <ProductBanner />
-                <SearchBar />
-                <FilterBar />
-                <ProductList products={demoProducts.slice((page - 1) * 10, page * 10)} />
-                <Pagination current={page} total={Math.ceil(demoProducts.length / 10)} onChange={setPage} />
-            </div>
-            <aside className="w-full md:w-80 flex-shrink-0">
-                <ProductReviews />
-                <FeaturedPosts />
-                <ProductTags />
-            </aside>
-        </div>
-    );
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await getAllProducts();
+        const mapped = res.map((item) => ({
+          id: item._id,
+          name: item.title,
+          image: item.image_url,
+          status: item.status,
+          desc: item.description,
+          location: item.location,
+          category_id: item.category_id?._id,
+          label:
+            item.view_count > item.interested_count
+              ? "Xem nhiều"
+              : "Quan tâm nhiều",
+        }));
+        setProducts(mapped);
+        setFiltered(mapped); // Ban đầu là tất cả
+      } catch (err) {
+        console.error("Lỗi khi lấy danh sách sản phẩm:", err.message);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Lọc theo danh mục mỗi khi category thay đổi
+  useEffect(() => {
+    if (!selectedCategory) {
+      setFiltered(products);
+    } else {
+      const filteredByCat = products.filter(
+        (p) => p.category_id === selectedCategory
+      );
+      setFiltered(filteredByCat);
+    }
+    setPage(1); // reset về trang đầu
+  }, [selectedCategory, products]);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginatedProducts = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  return (
+    <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-6 flex flex-col md:flex-row gap-8">
+      <div className="flex-1">
+        <ProductBanner />
+        <SearchBar />
+        <FilterBar onCategoryChange={setSelectedCategory} />
+        <ProductList products={paginatedProducts} />
+        {totalPages > 1 && (
+          <Pagination current={page} total={totalPages} onChange={setPage} />
+        )}
+      </div>
+      <aside className="w-full md:w-80 flex-shrink-0">
+        <ProductReviews />
+        <FeaturedPosts />
+        <ProductTags />
+      </aside>
+    </div>
+  );
 };
 
 export default ProductListingPage;

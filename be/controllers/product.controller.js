@@ -22,7 +22,8 @@ console.log(req.file);
       location,
       contact_phone,
       contact_zalo,
-      is_heavy
+      is_heavy,
+      delivery_method = "giao_tan_tay", // Mặc định là giao tận tay
     } = req.body;
 
     // Kiểm tra user tồn tại
@@ -46,7 +47,8 @@ console.log(req.file);
       image_url,
       status: "pending",
       created_at: new Date(),
-      updated_at: new Date()
+      updated_at: new Date(),
+      delivery_method,
     });
 
     const saved = await newProduct.save();
@@ -93,7 +95,14 @@ exports.updateProductStatus = async (req, res) => {
 // Lấy danh sách tất cả sản phẩm
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find()
+    const query = {};
+
+    // Nếu có query category
+    if (req.query.category) {
+      query.category_id = req.query.category;
+    }
+
+    const products = await Product.find(query)
       .populate("category_id")
       .populate("user_id");
 
@@ -130,6 +139,31 @@ exports.getProductsByUser = async (req, res) => {
     res.json(products);
   } catch (err) {
     console.error("Lỗi khi lấy danh sách sản phẩm của người dùng:", err.message);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
+// GET /api/products/popular
+exports.getPopularProducts = async (req, res) => {
+  try {
+    const topInterested = await Product.find()
+      .sort({ interested_count: -1 })
+      .limit(5);
+
+    const topViewed = await Product.find()
+      .sort({ view_count: -1 })
+      .limit(5);
+
+    // Kết hợp và loại trùng
+    const combinedMap = new Map();
+    [...topInterested, ...topViewed].forEach((p) => {
+      combinedMap.set(p._id.toString(), p);
+    });
+
+    const combinedProducts = Array.from(combinedMap.values());
+
+    res.json({ products: combinedProducts });
+  } catch (err) {
+    console.error("Lỗi khi lấy sản phẩm phổ biến:", err.message);
     res.status(500).json({ message: "Lỗi server" });
   }
 };

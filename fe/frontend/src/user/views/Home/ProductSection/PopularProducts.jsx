@@ -1,21 +1,46 @@
-import React from "react";
+// PopularProducts.jsx
+import React, { useEffect, useState } from "react";
 import ProductList from "./ProductList";
+import { getPopularProducts } from "../../../../api/productApi"; // đường dẫn đúng tới file bạn export
 
-const products = Array.from({ length: 10 }).map((_, i) => ({
-    id: i + 1,
-    name: "Áo sơ mi nam",
-    image: "https://product.hstatic.net/200000053174/product/9smdh555den_346858ac9cd84c909455c3b7f93f1917_master.jpg",
-    status: "Còn mới 90%",
-    desc: "Cổ gài sạch sẽ.",
-    location: "Q1, TPHCM",
-    label: i % 2 === 0 ? "Sẵn sàng" : "Mới",
-}));
+const PopularProducts = () => {
+  const [products, setProducts] = useState([]);
 
-const PopularProducts = () => (
+  useEffect(() => {
+    const fetchPopular = async () => {
+      try {
+        const res = await getPopularProducts(); // GỌI từ productApi
+
+        const data = Array.isArray(res) ? res : res.products;
+
+        const mapped = data.map((item) => ({
+          id: item._id,
+          name: item.title,
+          image: item.image_url,
+          status: item.status,
+          desc: item.description,
+          location: item.location,
+          label:
+            item.view_count > item.interested_count
+              ? "Xem nhiều"
+              : "Quan tâm nhiều",
+        }));
+
+        setProducts(mapped);
+      } catch (err) {
+        console.error("Lỗi khi lấy sản phẩm phổ biến:", err.message);
+      }
+    };
+
+    fetchPopular();
+  }, []);
+
+  return (
     <section className="mb-10 w-full">
-        <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">Danh sách phổ biến</h2>
-        <ProductList products={products} />
+      <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">Danh sách phổ biến</h2>
+      <ProductList products={products} />
     </section>
-);
+  );
+};
 
 export default PopularProducts;

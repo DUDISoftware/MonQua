@@ -11,6 +11,7 @@ const productSchema = new mongoose.Schema({
   contact_phone: String,
   contact_zalo: String,
   status: { type: String, enum: ["pending", "active", "given", "hidden"], default: "pending" },
+  delivery_method: { type: String, enum: ["giao_tan_tay", "nguoi_nhan_den_lay", "gap_tai_tay"], default: "giao_tan_tay" },
   view_count: { type: Number, default: 0 },
   interested_count: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now },

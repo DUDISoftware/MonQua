@@ -1,21 +1,51 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProductList from "./ProductList";
+import { getProductsByCategory } from "../../../../api/productApi";
 
-const products = Array.from({ length: 10 }).map((_, i) => ({
-    id: i + 11,
-    name: "Áo sơ mi nam",
-    image: "https://maymacthanhtung.vn/wp-content/uploads/2025/05/ao-so-mi-phoi-voi-quan-jean.jpg",
-    status: "Còn mới 90%",
-    desc: "Cổ gài sạch sẽ.",
-    location: "Q1, TPHCM",
-    label: i % 2 === 0 ? "Sẵn sàng" : "Mới",
-}));
+const CategoryProducts = ({ category }) => {
+  const [products, setProducts] = useState([]);
 
-const CategoryProducts = () => (
+  useEffect(() => {
+    if (!category?.id) return;
+
+    const fetch = async () => {
+      try {
+        const res = await getProductsByCategory(category.id);
+        const mapped = res.map((item) => ({
+          id: item._id,
+          name: item.title,
+          image: item.image_url,
+          status: item.status,
+          desc: item.description,
+          location: item.location,
+          label:
+            item.view_count > item.interested_count
+              ? "Xem nhiều"
+              : "Quan tâm nhiều",
+        }));
+        setProducts(mapped);
+      } catch (err) {
+        console.error("Lỗi khi lấy sản phẩm theo danh mục:", err.message);
+      }
+    };
+
+    fetch();
+  }, [category]);
+
+  if (!category) return null;
+
+  return (
     <section className="mb-10 w-full">
-        <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">Danh mục Quần Áo</h2>
+      <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">
+        Danh mục: {category.name}
+      </h2>
+      {products.length > 0 ? (
         <ProductList products={products} />
+      ) : (
+        <p className="text-center text-gray-500">Không có sản phẩm nào.</p>
+      )}
     </section>
-);
+  );
+};
 
 export default CategoryProducts;
