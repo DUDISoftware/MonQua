@@ -22,25 +22,25 @@ const MessengerPage = () => {
     setReceiverId(receiver);
     setProductId(product);
   };
+useEffect(() => {
+  const userId = localStorage.getItem("user_id");
+  if (!userId || !receiverId || !productId || hasFetched.current) return;
 
-  useEffect(() => {
-    const userId = localStorage.getItem("user_id");
-    if (!userId || !receiverId || !productId || hasFetched.current) return;
+  hasFetched.current = true; // ✅ Đặt ở đây trước khi gọi API
 
-    const fetchOrCreateConversation = async () => {
-      try {
-        const data = await createConversation(userId, receiverId, productId);
-        if (data?.data?.[0]?._id) {
-          setConversationId(data.data[0]._id);
-          hasFetched.current = true;
-        }
-      } catch (err) {
-        console.error("Lỗi khi tạo hội thoại:", err);
+  const fetchOrCreateConversation = async () => {
+    try {
+      const res = await createConversation(userId, receiverId, productId);
+      if (res.data && res.data.length > 0) {
+        setConversationId(res.data[0]._id);
       }
-    };
+    } catch (error) {
+      console.error("Lỗi tạo hội thoại:", error);
+    }
+  };
 
-    fetchOrCreateConversation();
-  }, [receiverId, productId]);
+  fetchOrCreateConversation();
+}, [receiverId, productId]);
 
   return (
     <div className="min-h-screen w-full bg-[#E6F4F1] flex items-center justify-center py-4">

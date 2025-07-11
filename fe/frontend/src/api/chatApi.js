@@ -9,7 +9,9 @@ export const createConversation = async (userId, receiverId, itemId) => {
   });
   return res.data;
 };
-
+export const getProductById = async (productId) => {
+  return await axios.get(`${API}/products/${productId}`);
+};
 export const getMessages = async (conversationId) => {
   const res = await axios.get(`${API}/messenger/messages/${conversationId}`);
   return res.data; // response dạng: { error: 0, data: [...] }

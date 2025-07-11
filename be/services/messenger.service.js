@@ -3,26 +3,28 @@ const ConversationMember = require("../models/messenger/conversation_members.mod
 const Message = require("../models/messenger/messages.model");
 
 exports.createConversation = async (user_id, receiver_id, item_id) => {
+  // 1. Tìm tất cả hội thoại cùng item_id
   const conversations = await Conversation.find({ item_id });
+console.log("🔥 API tạo hội thoại:", { user_id, receiver_id, item_id });
 
   for (const convo of conversations) {
+    // 2. Kiểm tra xem hội thoại này có 2 thành viên đúng không
     const members = await ConversationMember.find({ conversation_id: convo._id });
     const memberIds = members.map(m => m.user_id.toString());
 
-    const hasBothUsers =
+    // So sánh cả 2 user_id
+    if (
       memberIds.includes(user_id.toString()) &&
-      memberIds.includes(receiver_id.toString());
-
-    const noExtraUsers = memberIds.length === 2;
-
-    if (hasBothUsers && noExtraUsers) {
-      return convo; // ✅ Đã tồn tại
+      memberIds.includes(receiver_id.toString()) &&
+      memberIds.length === 2
+    ) {
+      return convo; // ✅ Hội thoại đã tồn tại
     }
   }
 
-  // ❌ Không tìm thấy hội thoại phù hợp → tạo mới
-  const newConversation = new Conversation({ item_id });
-  const saved = await newConversation.save();
+  // ❌ Nếu không tìm thấy → tạo mới
+  const conversation = new Conversation({ item_id });
+  const saved = await conversation.save();
 
   await ConversationMember.insertMany([
     { conversation_id: saved._id, user_id },
@@ -31,6 +33,7 @@ exports.createConversation = async (user_id, receiver_id, item_id) => {
 
   return saved;
 };
+
 
 
 exports.getUserConversations = async (userId) => {
