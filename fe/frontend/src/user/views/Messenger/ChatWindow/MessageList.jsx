@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import MessageItem from "./MessageItem";
-import { getMessages, getProductById } from "../../../../api/chatApi"; // đảm bảo bạn có API này
-import ProductHeader from "./ProductHeader"; // ✅ Sử dụng component mới
+import { getMessages, getProductById } from "../../../../api/chatApi";
+import ProductHeader from "./ProductHeader";
+import socket from "../../../../socket";
 
 const MessageList = ({ conversationId, reloadTrigger, productId }) => {
   const [messages, setMessages] = useState([]);
   const [product, setProduct] = useState(null);
+  const currentUserId = localStorage.getItem("user_id");
 
   useEffect(() => {
     if (conversationId) fetchMessages();
@@ -14,6 +16,14 @@ const MessageList = ({ conversationId, reloadTrigger, productId }) => {
   useEffect(() => {
     if (productId) fetchProduct();
   }, [productId]);
+
+  useEffect(() => {
+    socket.on("receiveMessage", (message) => {
+      setMessages((prev) => [...prev, message]);
+    });
+
+    return () => socket.off("receiveMessage");
+  }, []);
 
   const fetchMessages = async () => {
     try {
@@ -33,14 +43,9 @@ const MessageList = ({ conversationId, reloadTrigger, productId }) => {
     }
   };
 
-  const currentUserId = localStorage.getItem("user_id");
-
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-2">
-      {/* 🛒 Sản phẩm */}
       {product && <ProductHeader product={product} />}
-
-      {/* 💬 Danh sách tin nhắn */}
       {messages.map((msg, index) => (
         <MessageItem
           key={index}

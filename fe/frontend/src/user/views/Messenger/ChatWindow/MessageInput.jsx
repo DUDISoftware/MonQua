@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaPaperPlane } from "react-icons/fa";
 import { sendMessage } from "../../../../api/chatApi";
+import socket from "../../../../socket";
 
 const MessageInput = ({ conversationId, onSent }) => {
   const [value, setValue] = useState("");
@@ -9,10 +10,21 @@ const MessageInput = ({ conversationId, onSent }) => {
     const senderId = localStorage.getItem("user_id");
     if (!value.trim() || !senderId || !conversationId) return;
 
+    const message = {
+      content: value,
+      sender_id: { _id: senderId },
+      sent_at: new Date().toISOString(),
+    };
+
     try {
-      await sendMessage(conversationId, senderId, value);
+      socket.emit("sendMessage", {
+        conversationId,
+        message,
+      });
+
+      await sendMessage(conversationId, senderId, value); // lưu DB
       setValue("");
-      onSent?.(); // 🔁 notify parent to reload
+      onSent?.();
     } catch (err) {
       console.error("Lỗi gửi tin nhắn:", err.message);
     }

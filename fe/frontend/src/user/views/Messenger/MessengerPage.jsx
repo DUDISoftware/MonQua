@@ -7,6 +7,7 @@ import ChatHeader from "./ChatWindow/ChatHeader";
 import MessageList from "./ChatWindow/MessageList";
 import MessageInput from "./ChatWindow/MessageInput";
 import { createConversation } from "../../../api/chatApi";
+import socket from "../../../socket";
 
 const MessengerPage = () => {
   const location = useLocation();
@@ -14,33 +15,40 @@ const MessengerPage = () => {
   const [conversationId, setConversationId] = useState(null);
   const [receiverId, setReceiverId] = useState(params.get("user"));
   const [productId, setProductId] = useState(params.get("product"));
-  const [reloadTrigger, setReloadTrigger] = useState(0); // 🔁 để reload tin nhắn
-  const hasFetched = useRef(false); // ✅ tránh gọi API nhiều lần
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+  const hasFetched = useRef(false);
 
   const handleSelectConversation = (id, receiver, product) => {
     setConversationId(id);
     setReceiverId(receiver);
     setProductId(product);
   };
-useEffect(() => {
-  const userId = localStorage.getItem("user_id");
-  if (!userId || !receiverId || !productId || hasFetched.current) return;
 
-  hasFetched.current = true; // ✅ Đặt ở đây trước khi gọi API
-
-  const fetchOrCreateConversation = async () => {
-    try {
-      const res = await createConversation(userId, receiverId, productId);
-      if (res.data && res.data.length > 0) {
-        setConversationId(res.data[0]._id);
-      }
-    } catch (error) {
-      console.error("Lỗi tạo hội thoại:", error);
+  useEffect(() => {
+    if (conversationId) {
+      socket.emit("joinRoom", conversationId);
     }
-  };
+  }, [conversationId]);
 
-  fetchOrCreateConversation();
-}, [receiverId, productId]);
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    if (!userId || !receiverId || !productId || hasFetched.current) return;
+
+    hasFetched.current = true;
+
+    const fetchOrCreateConversation = async () => {
+      try {
+        const res = await createConversation(userId, receiverId, productId);
+        if (res.data && res.data.length > 0) {
+          setConversationId(res.data[0]._id);
+        }
+      } catch (error) {
+        console.error("Lỗi tạo hội thoại:", error);
+      }
+    };
+
+    fetchOrCreateConversation();
+  }, [receiverId, productId]);
 
   return (
     <div className="min-h-screen w-full bg-[#E6F4F1] flex items-center justify-center py-4">
@@ -60,7 +68,7 @@ useEffect(() => {
           />
           <MessageInput
             conversationId={conversationId}
-            onSent={() => setReloadTrigger(prev => prev + 1)} // 🔁 trigger reload
+            onSent={() => setReloadTrigger(prev => prev + 1)}
           />
         </div>
       </div>
