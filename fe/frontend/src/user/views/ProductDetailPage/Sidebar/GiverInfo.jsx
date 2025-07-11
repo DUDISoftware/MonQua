@@ -5,17 +5,30 @@ const GiverInfo = ({ user }) => {
   const navigate = useNavigate();
 
   if (!user) return null;
+  const handleChat = () => {
+    const currentUserId = localStorage.getItem("user_id");
+    const receiverId = user._id;
+    const productId = user.productId || user._productId || user.product_id || "";
 
-const handleViewMore = () => {
-  const currentUserId = String(localStorage.getItem("user_id") || "");
-  const productOwnerId = String(user._id || "");
+    console.log("🔍 currentUserId:", currentUserId);
+    console.log("🔍 receiverId:", receiverId);
+    console.log("🔍 productId:", productId);
 
-  if (productOwnerId === currentUserId) {
-    navigate("/profile");
-  } else {
-    navigate(`/user/${productOwnerId}`);
-  }
-};
+    if (!currentUserId || !receiverId) return;
+
+    navigate(`/messenger?user=${receiverId}&product=${productId}`);
+  };
+
+  const handleViewMore = () => {
+    const currentUserId = String(localStorage.getItem("user_id") || "");
+    const productOwnerId = String(user._id || "");
+
+    if (productOwnerId === currentUserId) {
+      navigate("/profile");
+    } else {
+      navigate(`/user/${productOwnerId}`);
+    }
+  };
 
 
   return (
@@ -46,6 +59,7 @@ const handleViewMore = () => {
       )}
 
       <button
+        onClick={handleChat}
         className="w-full bg-[#ECFDF5] text-[#17805C] font-semibold text-lg py-3 rounded-2xl mb-3 border border-[#D1FAE5] transition"
       >
         Chat với người tặng

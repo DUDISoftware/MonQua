@@ -1,26 +1,71 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import UserProfileCard from "./Sidebar/UserProfileCard";
 import StatusList from "./Sidebar/StatusList";
 import ChatList from "./Sidebar/ChatList";
 import ChatHeader from "./ChatWindow/ChatHeader";
 import MessageList from "./ChatWindow/MessageList";
 import MessageInput from "./ChatWindow/MessageInput";
+import { createConversation } from "../../../api/chatApi";
 
-const MessengerPage = () => (
+const MessengerPage = () => {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const [conversationId, setConversationId] = useState(null);
+  const [receiverId, setReceiverId] = useState(params.get("user"));
+  const [productId, setProductId] = useState(params.get("product"));
+  const [reloadTrigger, setReloadTrigger] = useState(0); // 🔁 để reload tin nhắn
+  const hasFetched = useRef(false); // ✅ tránh gọi API nhiều lần
+
+  const handleSelectConversation = (id, receiver, product) => {
+    setConversationId(id);
+    setReceiverId(receiver);
+    setProductId(product);
+  };
+
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    if (!userId || !receiverId || !productId || hasFetched.current) return;
+
+    const fetchOrCreateConversation = async () => {
+      try {
+        const data = await createConversation(userId, receiverId, productId);
+        if (data?.data?.[0]?._id) {
+          setConversationId(data.data[0]._id);
+          hasFetched.current = true;
+        }
+      } catch (err) {
+        console.error("Lỗi khi tạo hội thoại:", err);
+      }
+    };
+
+    fetchOrCreateConversation();
+  }, [receiverId, productId]);
+
+  return (
     <div className="min-h-screen w-full bg-[#E6F4F1] flex items-center justify-center py-4">
-        <div className="w-full max-w-6xl h-[80vh] flex rounded-2xl overflow-hidden shadow-lg bg-transparent">
-            <aside className="w-[340px] bg-white h-full flex-shrink-0 flex flex-col border-r border-[#E6F4F1]">
-                <UserProfileCard />
-                <StatusList />
-                <ChatList />
-            </aside>
-            <div className="flex-1 flex flex-col bg-[#F6FCFA] h-full">
-                <ChatHeader />
-                <MessageList />
-                <MessageInput />
-            </div>
+      <div className="w-full max-w-6xl h-[80vh] flex rounded-2xl overflow-hidden shadow-lg bg-transparent">
+        <aside className="w-[340px] bg-white h-full flex-shrink-0 flex flex-col border-r border-[#E6F4F1]">
+          <UserProfileCard />
+          <StatusList />
+          <ChatList onSelectConversation={handleSelectConversation} />
+        </aside>
+        <div className="flex-1 flex flex-col bg-[#F6FCFA] h-full">
+          <ChatHeader userId={receiverId} />
+          <MessageList
+            userId={receiverId}
+            productId={productId}
+            conversationId={conversationId}
+            reloadTrigger={reloadTrigger}
+          />
+          <MessageInput
+            conversationId={conversationId}
+            onSent={() => setReloadTrigger(prev => prev + 1)} // 🔁 trigger reload
+          />
         </div>
+      </div>
     </div>
-);
+  );
+};
 
 export default MessengerPage;

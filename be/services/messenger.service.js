@@ -2,77 +2,77 @@ const Conversation = require("../models/messenger/conversations.model");
 const ConversationMember = require("../models/messenger/conversation_members.model");
 const Message = require("../models/messenger/messages.model");
 
-// Tạo hội thoại mới (1-1)
-exports.createConversation = async (userIds) => {
-    try {
-        // Kiểm tra nếu đã có hội thoại giữa 2 user thì trả về luôn
-        const existing = await ConversationMember.aggregate([
-            { $match: { user_id: { $in: userIds.map(id => require("mongoose").Types.ObjectId(id)) } } },
-            { $group: { _id: "$conversation_id", members: { $addToSet: "$user_id" } } },
-            { $match: { members: { $size: 2 } } }
-        ]);
-        if (existing.length > 0) {
-            const conversation = await Conversation.findById(existing[0]._id);
-            return conversation;
-        }
-        // Tạo hội thoại mới
-        const conversation = new Conversation();
-        await conversation.save();
-        for (const userId of userIds) {
-            await ConversationMember.create({
-                conversation_id: conversation._id,
-                user_id: userId,
-                joined_at: new Date()
-            });
-        }
-        return conversation;
-    } catch (error) {
-        console.error("Lỗi khi tạo hội thoại:", error.message);
-        throw new Error("Lỗi khi tạo hội thoại: " + error.message);
+exports.createConversation = async (user_id, receiver_id, item_id) => {
+  const conversations = await Conversation.find({ item_id });
+
+  for (const convo of conversations) {
+    const members = await ConversationMember.find({ conversation_id: convo._id });
+    const memberIds = members.map(m => m.user_id.toString());
+
+    const hasBothUsers =
+      memberIds.includes(user_id.toString()) &&
+      memberIds.includes(receiver_id.toString());
+
+    const noExtraUsers = memberIds.length === 2;
+
+    if (hasBothUsers && noExtraUsers) {
+      return convo; // ✅ Đã tồn tại
     }
+  }
+
+  // ❌ Không tìm thấy hội thoại phù hợp → tạo mới
+  const newConversation = new Conversation({ item_id });
+  const saved = await newConversation.save();
+
+  await ConversationMember.insertMany([
+    { conversation_id: saved._id, user_id },
+    { conversation_id: saved._id, user_id: receiver_id }
+  ]);
+
+  return saved;
 };
 
-// Lấy danh sách hội thoại của user
+
 exports.getUserConversations = async (userId) => {
-    try {
-        const memberConvs = await ConversationMember.find({ user_id: userId }).populate("conversation_id");
-        return memberConvs.map(m => m.conversation_id);
-    } catch (error) {
-        console.error("Lỗi khi lấy danh sách hội thoại:", error.message);
-        throw new Error("Lỗi khi lấy danh sách hội thoại: " + error.message);
+    const memberships = await ConversationMember.find({ user_id: userId }).populate("conversation_id");
+    const result = [];
+
+    for (const m of memberships) {
+        const convo = m.conversation_id.toObject();
+
+        const members = await ConversationMember.find({
+            conversation_id: convo._id,
+            user_id: { $ne: userId }
+        }).populate("user_id", "name avatar");
+
+        const lastMessage = await Message.findOne({ conversation_id: convo._id })
+            .sort({ sent_at: -1 });
+
+        result.push({
+            _id: convo._id,
+            productId: convo.item_id,
+            updatedAt: convo.updated_at,
+            receiver: members[0]?.user_id || null,
+            lastMessage: lastMessage?.content || ""
+        });
     }
+
+    return result;
 };
 
-// Gửi tin nhắn mới
-exports.sendMessage = async (messageData) => {
-    try {
-        const message = new Message(messageData);
-        await message.save();
-        // Cập nhật updated_at của hội thoại
-        await Conversation.findByIdAndUpdate(message.conversation_id, { updated_at: new Date() });
-        return message;
-    } catch (error) {
-        console.error("Lỗi khi gửi tin nhắn:", error.message);
-        throw new Error("Lỗi khi gửi tin nhắn: " + error.message);
-    }
+exports.sendMessage = async ({ conversation_id, sender_id, content, message_type = "text" }) => {
+    const message = new Message({
+        conversation_id,
+        sender_id,
+        content,
+        message_type,
+    });
+
+    return await message.save();
 };
 
-// Lấy tin nhắn của hội thoại
 exports.getMessagesByConversation = async (conversationId) => {
-    try {
-        return await Message.find({ conversation_id: conversationId }).sort({ sent_at: 1 });
-    } catch (error) {
-        console.error("Lỗi khi lấy tin nhắn:", error.message);
-        throw new Error("Lỗi khi lấy tin nhắn: " + error.message);
-    }
-};
-
-// Đánh dấu đã đọc tin nhắn
-exports.markMessageAsRead = async (messageId) => {
-    try {
-        return await Message.findByIdAndUpdate(messageId, { status: "read" }, { new: true });
-    } catch (error) {
-        console.error("Lỗi khi đánh dấu đã đọc:", error.message);
-        throw new Error("Lỗi khi đánh dấu đã đọc: " + error.message);
-    }
+    return await Message.find({ conversation_id: conversationId })
+        .sort({ sent_at: 1 })
+        .populate("sender_id", "name email");
 };

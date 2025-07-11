@@ -1,30 +1,36 @@
 import React, { useState } from "react";
-import { FaPaperclip, FaSmile, FaPaperPlane, FaMicrophone } from "react-icons/fa";
+import { FaPaperPlane } from "react-icons/fa";
+import { sendMessage } from "../../../../api/chatApi";
 
-const MessageInput = () => {
-    const [value, setValue] = useState("");
-    return (
-        <div className="flex items-center gap-2 border-t border-[#E6F4F1] px-6 py-4 bg-[#F6FCFA]">
-            <button className="text-[#22C55E] text-lg">
-                <FaPaperclip />
-            </button>
-            <button className="text-[#22C55E] text-lg">
-                <FaSmile />
-            </button>
-            <input
-                className="flex-1 px-4 py-2 rounded-full border border-[#E6F4F1] bg-white focus:outline-none"
-                placeholder="Write your message..."
-                value={value}
-                onChange={e => setValue(e.target.value)}
-            />
-            <button className="text-[#22C55E] text-lg">
-                <FaMicrophone />
-            </button>
-            <button className="bg-[#22C55E] text-white px-4 py-2 rounded-full font-semibold hover:bg-[#16a34a] transition flex items-center">
-                <FaPaperPlane />
-            </button>
-        </div>
-    );
+const MessageInput = ({ conversationId, onSent }) => {
+  const [value, setValue] = useState("");
+
+  const handleSend = async () => {
+    const senderId = localStorage.getItem("user_id");
+    if (!value.trim() || !senderId || !conversationId) return;
+
+    try {
+      await sendMessage(conversationId, senderId, value);
+      setValue("");
+      onSent?.(); // 🔁 notify parent to reload
+    } catch (err) {
+      console.error("Lỗi gửi tin nhắn:", err.message);
+    }
+  };
+
+  return (
+    <div className="flex items-center p-4 border-t border-gray-200">
+      <input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Nhập tin nhắn..."
+        className="flex-1 border rounded-full px-4 py-2"
+      />
+      <button onClick={handleSend} className="ml-2 text-blue-500">
+        <FaPaperPlane />
+      </button>
+    </div>
+  );
 };
 
 export default MessageInput;
