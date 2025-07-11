@@ -29,6 +29,12 @@ const MessengerPage = () => {
       socket.emit("joinRoom", conversationId);
     }
   }, [conversationId]);
+useEffect(() => {
+  const userId = localStorage.getItem("user_id");
+  if (userId) {
+    socket.emit("registerUser", userId); // 👈 đăng ký khi user kết nối
+  }
+}, []);
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");

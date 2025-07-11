@@ -1,8 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { getUserById } from "../../../../api/UserApi";
+import socket from "../../../../socket";
 
 const ChatHeader = ({ userId }) => {
   const [user, setUser] = useState(null);
+  const [isOnline, setIsOnline] = useState(false);
+useEffect(() => {
+  if (!userId) return;
+
+  socket.emit("checkOnline", userId, (online) => {
+    setIsOnline(online);
+  });
+
+  socket.on("userOnline", (id) => {
+    if (id === userId) setIsOnline(true);
+  });
+
+  socket.on("userOffline", (id) => {
+    if (id === userId) setIsOnline(false);
+  });
+
+  return () => {
+    socket.off("userOnline");
+    socket.off("userOffline");
+  };
+}, [userId]);
+
 
   useEffect(() => {
     if (!userId) return;
@@ -11,7 +34,6 @@ const ChatHeader = ({ userId }) => {
       try {
         const token = localStorage.getItem("token");
         const data = await getUserById(userId, token);
-
         if (data?.data?.length > 0) {
           setUser(data.data[0]);
         }
@@ -43,7 +65,9 @@ const ChatHeader = ({ userId }) => {
           <div className="font-semibold text-gray-900">
             {user.name || "Người dùng"}
           </div>
-          <div className="text-xs text-gray-400">Online</div>
+          <div className={`text-xs ${isOnline ? "text-green-500" : "text-gray-400"}`}>
+            {isOnline ? "Đang hoạt động" : "Ngoại tuyến"}
+          </div>
         </div>
       </div>
     </div>
