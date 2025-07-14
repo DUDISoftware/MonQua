@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const productController = require("../controllers/product.controller");
-const { uploadImage } = require("../utils/cloudinary.util"); // Đường đúng
+const { uploadImage } = require("../utils/cloudinary.util");
 const validateImage = require("../middleware/imageValidation.middleware");
 
-// POST /api/products => đăng sản phẩm có ảnh
+// Đăng sản phẩm (có ảnh)
 router.post(
   "/",
   uploadImage.single("image"),
@@ -12,15 +12,19 @@ router.post(
   productController.createProduct
 );
 
-
+// Cập nhật trạng thái sản phẩm
 router.put("/:id/status", productController.updateProductStatus);
 
-// Lấy danh sách sản phẩm
+// Lấy danh sách sản phẩm (có thể lọc theo category ?category=abc)
 router.get("/", productController.getAllProducts);
-// Lấy dsach sản phẩm theo user
+
+// Lấy sản phẩm theo user
 router.get("/user/:userId", productController.getProductsByUser);
-// Lấy chi tiết sản phẩm theo ID
+
+// Lấy sản phẩm phổ biến
 router.get("/popular", productController.getPopularProducts);
+
+// Lấy chi tiết sản phẩm
 router.get("/:id", productController.getProductById);
 
 module.exports = router;

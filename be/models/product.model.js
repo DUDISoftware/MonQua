@@ -10,6 +10,7 @@ const productSchema = new mongoose.Schema({
   is_heavy: Boolean,
   contact_phone: String,
   contact_zalo: String,
+  quality: { type: String, enum: ["new", "used", "like_new_90", "like_new_70"], default: "new" },
   status: { type: String, enum: ["pending", "active", "given", "hidden"], default: "pending" },
   delivery_method: { type: String, enum: ["giao_tan_tay", "nguoi_nhan_den_lay", "gap_tai_tay"], default: "giao_tan_tay" },
   view_count: { type: Number, default: 0 },

@@ -15,6 +15,7 @@ const PostGiftForm = () => {
   const [contactZalo, setContactZalo] = useState("");
   const [isHeavy, setIsHeavy] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  const [quality, setQuality] = useState("new"); // Mặc định là new
 const [deliveryMethod, setDeliveryMethod] = useState("giao_tan_tay");
 
   const handleSubmit = async (e) => {
@@ -36,6 +37,7 @@ const [deliveryMethod, setDeliveryMethod] = useState("giao_tan_tay");
     formData.append("contact_phone", contactPhone);
     formData.append("contact_zalo", contactZalo);
     formData.append("is_heavy", isHeavy);
+    formData.append("quality", quality);
     formData.append("image", imageFile); // tên field phải đúng như backend `uploadImage.single("image")`
 formData.append("delivery_method", deliveryMethod);
 
@@ -86,7 +88,7 @@ formData.append("delivery_method", deliveryMethod);
           <PostGiftCategorySelect value={categoryId} onChange={setCategoryId} />
         </div>
         <div className="flex-1">
-          <PostGiftConditionSelect />
+          <PostGiftConditionSelect value={quality} onChange={setQuality} />
         </div>
       </div>
 

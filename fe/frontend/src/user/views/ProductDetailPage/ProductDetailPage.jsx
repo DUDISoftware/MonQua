@@ -36,18 +36,21 @@ const ProductDetailPage = () => {
         <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-6 flex flex-col md:flex-row gap-8">
             <div className="flex-1">
                 <ProductBanner />
-               <ProductCarousel image={product.image_url} />
+                <ProductCarousel image={product.image_url} />
                 <ProductTitle title={product.title} />
-               <ProductFeatures
-    status={product.status}
-    location={product.location}
-/>
+                <ProductFeatures
+                    status={product.status}
+                    location={product.location}
+                />
                 <ProductDescription description={product.description} />
                 <RelatedProductsList productId={product._id} />
                 <Pagination />
             </div>
             <aside className="w-full md:w-80 flex-shrink-0">
-                <GiverInfo userId={product.userId} />
+               <GiverInfo user={{ ...product.user_id, productId: product._id }} />
+
+
+
                 <ProductReviews productId={product._id} />
                 <FeaturedPosts />
                 <ProductTags tags={product.tags} />
