@@ -21,8 +21,9 @@ exports.createProduct = async (req, res) => {
       category_id,
       location,
       contact_phone,
-      contact_zalo,
+      contact_zalo = contact_phone,
       is_heavy,
+      quality = "new", // Mặc định là new
       delivery_method = "giao_tan_tay", // Mặc định là giao tận tay
     } = req.body;
 
@@ -42,10 +43,12 @@ exports.createProduct = async (req, res) => {
       category_id,
       location,
       contact_phone,
-      contact_zalo,
+      contact_zalo: contact_zalo === contact_phone,
       is_heavy,
       image_url,
       status: "pending",
+      quality: quality,
+      view_count: 0,
       created_at: new Date(),
       updated_at: new Date(),
       delivery_method,
