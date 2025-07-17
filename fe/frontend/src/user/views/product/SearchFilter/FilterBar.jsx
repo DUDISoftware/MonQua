@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllCategories } from "../../../../api/categoryApi";
+import { getCategories } from "../../../../api/product.category.api.js";
 
 const FilterBar = ({ onCategoryChange }) => {
   const [categories, setCategories] = useState([]);

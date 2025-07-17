@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { loginUser, googleLogin } from "../../../api/UserApi";
+import { loginUser, googleLogin } from "../../../api/User.api.js";
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 import MonQuaNhoImg from "../../assets/MonQuaNho.png";

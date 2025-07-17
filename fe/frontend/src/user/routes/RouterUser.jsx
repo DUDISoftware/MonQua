@@ -2,18 +2,18 @@ import React from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Home from "../views/Home/FullHome";
+import Home from "../views/Home/index";
 import Login from "../views/Authorization/login";
 import Register from "../views/Authorization/register";
-import Roadmap from "../views/Roadmap/Roadmap";
-import FullContactSection from "../views/ContactSection/FullContactSection";
-import ProductListingPage from "../views/product/ProductListingPage";
-import ProductDetailPage from "../views/ProductDetailPage/ProductDetailPage";
-import CommunityPage from "../views/community/CommunityPage";
+import Roadmap from "../views/Roadmap/index";
+import FullContactSection from "../views/ContactSection/index";
+import ProductListingPage from "../views/product/index";
+import ProductDetailPage from "../views/ProductDetailPage/index";
+import CommunityPage from "../views/community/index";
 import MessengerPage from "../views/Messenger/MessengerPage";
-import ProfilePage from "../views/Profile/ProfilePage";
-import ProfileSettingPage from "../views/ProfileSetting/ProfileSettingPage";
-import CharityProgramsPage from "../views/CharityPrograms/CharityProgramsPage";
+import ProfilePage from "../views/Profile/index";
+import ProfileSettingPage from "../views/ProfileSetting/index";
+import CharityProgramsPage from "../views/CharityPrograms/index";
 import PostGiftPage from "../views/PostGift/index";
 
 const Layout = () => (

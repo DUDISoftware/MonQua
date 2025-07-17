@@ -1,11 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
+// ProductItem chỉ nhận product qua props, render UI, không fetch API
 const ProductItem = ({ product, active, onClick }) => {
     const navigate = useNavigate();
 
     const handleDetailClick = (e) => {
-        e.stopPropagation(); // Ngăn chặn sự kiện onClick của div bên ngoài
+        e.stopPropagation();
         navigate(`/products/${product.id}`);
     };
 

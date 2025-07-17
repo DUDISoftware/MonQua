@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ProductBanner from "./Banner/ProductBanner";
-import ProductCarousel from "./ProductDetailMain/ProductCarousel";
-import ProductTitle from "./ProductDetailMain/ProductTitle";
-import ProductFeatures from "./ProductDetailMain/ProductFeatures";
-import ProductDescription from "./ProductDetailMain/ProductDescription";
-import RelatedProductsList from "./RelatedProducts/RelatedProductsList";
-import Pagination from "./Pagination/Pagination";
-import GiverInfo from "./Sidebar/GiverInfo";
-import ProductReviews from "./Sidebar/ProductReviews";
-import FeaturedPosts from "./Sidebar/FeaturedPosts";
-import ProductTags from "./Sidebar/ProductTags";
-import { getProductById } from "../../../api/productApi";
+import ProductBanner from "./Banner/ProductBanner.jsx";
+import ProductCarousel from "./ProductDetailMain/ProductCarousel.jsx";
+import ProductTitle from "./ProductDetailMain/ProductTitle.jsx";
+import ProductFeatures from "./ProductDetailMain/ProductFeatures.jsx";
+import ProductDescription from "./ProductDetailMain/ProductDescription.jsx";
+import RelatedProductsList from "./RelatedProducts/RelatedProductsList.jsx";
+import Pagination from "./Pagination/Pagination.jsx";
+import GiverInfo from "./Sidebar/GiverInfo.jsx";
+import ProductReviews from "./Sidebar/ProductReviews.jsx";
+import FeaturedPosts from "./Sidebar/FeaturedPosts.jsx";
+import ProductTags from "./Sidebar/ProductTags.jsx";
+import { getProductById } from "../../../api/product.api.js";
 
 const ProductDetailPage = () => {
     const { id } = useParams();
@@ -36,12 +36,12 @@ const ProductDetailPage = () => {
         <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-6 flex flex-col md:flex-row gap-8">
             <div className="flex-1">
                 <ProductBanner />
-               <ProductCarousel image={product.image_url} />
+                <ProductCarousel image={product.image_url} />
                 <ProductTitle title={product.title} />
-               <ProductFeatures
-    status={product.status}
-    location={product.location}
-/>
+                <ProductFeatures
+                    status={product.status}
+                    location={product.location}
+                />
                 <ProductDescription description={product.description} />
                 <RelatedProductsList productId={product._id} />
                 <Pagination />
