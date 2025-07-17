@@ -3,10 +3,13 @@ const mongoose = require("mongoose");
 const productSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   title: { type: String, required: true },
+  slug: { type: String, required: true, unique: true }, // Slug cho sản phẩm
   description: String,
-  category_id: { type: mongoose.Schema.Types.ObjectId, ref: "Category" }, // Đúng tên model
+  category_id: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
   image_url: String,
+  sub_images_urls: [String], // Mảng các URL ảnh phụ
   location: String,
+  label: { type: String, default: "Mới" }, // Nhãn hiển thị (Mới, Hot)
   is_heavy: Boolean,
   contact_phone: String,
   contact_zalo: String,
@@ -17,6 +20,5 @@ const productSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
 });
-
 
 module.exports = mongoose.model("Product", productSchema);
