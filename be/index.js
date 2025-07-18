@@ -1,26 +1,26 @@
-// Import các thư viện cần thiết
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const http = require("http"); // ⬅️ QUAN TRỌNG
+const { initSocket } = require("./socket"); // ⬅️ import
 
-// Khởi tạo ứng dụng Express
-const app = express();
-
-// Cấu hình môi trường
 dotenv.config();
 
+const app = express();
+const server = http.createServer(app); // ⬅️ tạo server HTTP
+initSocket(server); // ⬅️ khởi tạo socket
+
+// Middleware
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
-// Cấu hình view engine
-app.set("view engine", "ejs");
-
+// Routes
 app.use("/api", require("./routes/index.routes"));
 
-// Kết nối MongoDB và khởi động server
+// MongoDB + Server start
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Kết nối MongoDB thành công"))
@@ -30,6 +30,6 @@ mongoose
   });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => { // ⬅️ dùng server thay vì app.listen
   console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
 });

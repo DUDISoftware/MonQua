@@ -37,7 +37,7 @@ const UserCard = () => {
       <div className="text-xs text-gray-500 mb-4">
         Số điện thoại: {user.phone.replace(/(\d{4})(\d{3})(\d{3})/, "$1 *** $3")}
       </div>
-      <button className="w-full bg-[#6EE7B7] text-[#17805C] font-bold text-base py-2 rounded-2xl mb-2 flex items-center justify-center gap-2 transition"
+      {/* <button className="w-full bg-[#6EE7B7] text-[#17805C] font-bold text-base py-2 rounded-2xl mb-2 flex items-center justify-center gap-2 transition"
         style={{ boxShadow: "0 2px 8px 0 #6EE7B733" }}>
         <FaPhoneAlt /> Gọi người đăng
       </button>
@@ -46,7 +46,7 @@ const UserCard = () => {
       </button>
       <button className="w-full bg-[#F1F5F9] text-[#2563EB] font-semibold text-base py-2 rounded-2xl border border-[#E0E7EF] flex items-center justify-center gap-2 transition">
         Chat qua Zalo
-      </button>
+      </button> */}
     </div>
   );
 };

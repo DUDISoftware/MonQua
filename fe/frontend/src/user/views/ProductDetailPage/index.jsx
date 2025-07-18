@@ -47,7 +47,10 @@ const ProductDetailPage = () => {
                 <Pagination />
             </div>
             <aside className="w-full md:w-80 flex-shrink-0">
-                <GiverInfo userId={product.userId} />
+               <GiverInfo user={{ ...product.user_id, productId: product._id }} />
+
+
+
                 <ProductReviews productId={product._id} />
                 <FeaturedPosts />
                 <ProductTags tags={product.tags} />
