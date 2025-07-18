@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FiPhone, FiVideo, FiMoreVertical } from "react-icons/fi";
-import { getUserById } from "../../../../api/UserApi";
+import { getUserById } from "../../../../api/user.api";
 import socket from "../../../../socket";
 
 const ChatHeader = ({ userId }) => {

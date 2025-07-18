@@ -2,7 +2,8 @@
 import React from "react";
 import BannerSection from "./Banner/BannerSection";
 import SearchBar from "./SearchFilter/SearchBar";
-import FilterBar from "./SearchFilter/FilterBar";
+// Import FilterBar from the product directory instead
+import FilterBar from "../product/SearchFilter/FilterBar";
 import ProductSection from "./ProductSection";
 import HowItWorks from "./HowItWorks/HowItWorks";
 import WhyUs from "./WhyUs/WhyUs";
