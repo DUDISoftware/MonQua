@@ -1,7 +1,7 @@
 import React from "react";
 import CommentSection from "./CommentSection";
 
-const PostItem = ({ post }) => (
+const PostItem = ({ post, isLoggedIn }) => (
     <div className="bg-white rounded-xl border border-gray-200 p-4">
         <div className="flex items-center mb-2">
             <div className="w-9 h-9 rounded-full bg-[#E6F4E6] flex items-center justify-center font-bold text-[#22C55E] mr-3">
@@ -13,7 +13,19 @@ const PostItem = ({ post }) => (
             </div>
         </div>
         <div className="mb-3 text-gray-800">{post.content}</div>
-        <CommentSection postId={post.id} />
+        {post.image_urls && post.image_urls.length > 0 && (
+            <div className="mb-3 grid grid-cols-2 gap-2">
+                {post.image_urls.map((imageUrl, idx) => (
+                    <img
+                        key={idx}
+                        src={imageUrl}
+                        alt={`Post image ${idx + 1}`}
+                        className="w-full h-48 object-cover rounded-lg"
+                    />
+                ))}
+            </div>
+        )}
+        <CommentSection postId={post._id} isLoggedIn={isLoggedIn} />
     </div>
 );
 

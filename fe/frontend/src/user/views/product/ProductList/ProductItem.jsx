@@ -5,7 +5,7 @@ const ProductItem = ({ product }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/products/${product.id}`); // Chuyển hướng đến trang chi tiết sản phẩm
+    navigate(`/products/${product.id}`);
   };
 
   return (
@@ -13,13 +13,14 @@ const ProductItem = ({ product }) => {
       onClick={handleClick}
       className="bg-white rounded-xl border border-gray-200 p-3 flex flex-col hover:shadow-md transition cursor-pointer relative"
     >
-      <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold ${
-        product.label === "Mới"
+      {product.label && (
+        <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold ${product.label === "Mới"
           ? "bg-yellow-400 text-white"
           : "bg-blue-500 text-white"
-      }`}>
-        {product.label}
-      </span>
+          }`}>
+          {product.label}
+        </span>
+      )}
       <img
         src={product.image}
         alt={product.name}

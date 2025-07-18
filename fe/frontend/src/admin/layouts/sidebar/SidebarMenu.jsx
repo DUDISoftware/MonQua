@@ -8,7 +8,11 @@ const SidebarMenu = () => (
         <NavGroup label="Quản lý" icon="📦">
             <NavItem to="/admin/users" label="Người dùng" icon="👤" />
             <NavItem to="/admin/products" label="Sản phẩm" icon="🎁" />
-            <NavItem to="/admin/orders" label="Đơn hàng" icon="📝" />
+            <NavItem to="/admin/category-products" label="Danh mục sản phẩm" icon="📂" />
+            <NavItem to="/admin/posts" label="Bài viết" icon="📝" />
+            <NavItem to="/admin/category-posts" label="Danh mục bài viết" icon="🗂️" />
+            <NavItem to="/admin/comments" label="Danh sách bình luận" icon="💬" />
+            <NavItem to="/admin/orders" label="Đơn hàng" icon="📦" />
         </NavGroup>
         <NavItem to="/admin/settings" icon="⚙️" label="Cài đặt" />
     </nav>

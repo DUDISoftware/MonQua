@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import MonQuaNhoImg from "../../assets/MonQuaNho.png";
-import { registerUser } from "../../../api/UserApi"; // Sử dụng API để đăng ký
+import { registerUser } from "../../../api/User.api.js"; // Sử dụng API để đăng ký
 
 const Register = () => {
     const [form, setForm] = useState({
