@@ -104,10 +104,18 @@ exports.getAllProducts = async (req, res) => {
     if (req.query.category) {
       query.category_id = req.query.category;
     }
+    // Nếu có query quality
+    if (req.query.quality) {
+      query.quality = req.query.quality;
+    }
 
     const products = await Product.find(query)
       .populate("category_id")
-      .populate("user_id");
+      .populate("user_id")
+      .populate("quality");
+
+    // Sắp xếp theo ngày tạo mới nhất trước
+    products.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     res.json(products);
   } catch (err) {
@@ -157,11 +165,11 @@ exports.getPopularProducts = async (req, res) => {
   try {
     const topInterested = await Product.find()
       .sort({ interested_count: -1 })
-      .limit(5);
+      .limit(6);
 
     const topViewed = await Product.find()
       .sort({ view_count: -1 })
-      .limit(5);
+      .limit(6);
 
     // Kết hợp và loại trùng
     const combinedMap = new Map();

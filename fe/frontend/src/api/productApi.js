@@ -32,10 +32,12 @@ export const getPopularProducts = async () => {
   return await apiRequest("get", "/products/popular");
 };
 // Lấy sản phẩm theo ID danh mục
-export const getProductsByCategory = async (categoryId) => {
-  return await apiRequest("get", `/products?category=${categoryId}`);
+export const getProductsByCategory = async (categoryId, quality) => {
+  return await apiRequest("get", `/products?category=${categoryId}&quality=${quality}`);
 };
+// Lấy tất cả danh mục
 export const getAllProducts = async () => {
   return await apiRequest("get", "/products");
 };
+
 
