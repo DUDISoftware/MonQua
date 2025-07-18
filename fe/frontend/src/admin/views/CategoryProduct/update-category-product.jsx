@@ -8,7 +8,7 @@ const UpdateCategoryProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [form, setForm] = useState({
-        name: "",
+        category_name: "",
         description: "",
         created_at: "",
         updated_at: ""
@@ -23,8 +23,9 @@ const UpdateCategoryProduct = () => {
                 const data = await getCategoryById(id, token);
                 const cat = data.data?.[0] || data.data || data.category || data;
                 setForm({
-                    name: cat.name || cat.category_name || "",
+                    category_name: cat.category_name || "",
                     description: cat.description || "",
+                    slug: cat.slug || "",
                     created_at: cat.created_at || "",
                     updated_at: cat.updated_at || ""
                 });
@@ -64,8 +65,8 @@ const UpdateCategoryProduct = () => {
                 <TextField
                     fullWidth
                     label="Tên danh mục"
-                    name="name"
-                    value={form.name}
+                    name="category_name"
+                    value={form.category_name}
                     onChange={handleChange}
                     required
                     sx={{ mb: 2 }}
@@ -78,6 +79,14 @@ const UpdateCategoryProduct = () => {
                     onChange={handleChange}
                     multiline
                     rows={3}
+                    sx={{ mb: 2 }}
+                />
+                <TextField
+                    fullWidth
+                    label="Slug"
+                    name="slug"
+                    value={form.slug || ""}
+                    disabled
                     sx={{ mb: 2 }}
                 />
                 <TextField

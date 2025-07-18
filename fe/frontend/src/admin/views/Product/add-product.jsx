@@ -1,16 +1,16 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-    Typography, Box, TextField, Button, Snackbar, Alert
+    Typography, Box, TextField, Button, Snackbar, Alert, FormControl, InputLabel, MenuItem, Select
 } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { addProduct } from "../../../api/product.api.js";
+import { getCategories } from "../../../api/product.category.api.js";
 
 const AddProduct = () => {
     const navigate = useNavigate();
     const [form, setForm] = useState({
         title: "",
-        price: "",
         category_id: "",
         description: "",
         user_id: "",
@@ -24,8 +24,22 @@ const AddProduct = () => {
     });
     const [imageFile, setImageFile] = useState(null);
     const [subImages, setSubImages] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
     const token = localStorage.getItem("token");
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await getCategories(token);
+                const list = data.data || data.categories || data;
+                setCategories(Array.isArray(list) ? list : []);
+            } catch (err) {
+                setSnackbar({ open: true, message: "Không thể tải danh sách danh mục", severity: 'error' });
+            }
+        };
+        fetchCategories();
+    }, [token]);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -74,15 +88,28 @@ const AddProduct = () => {
             <Typography variant="h6" fontWeight={600} mb={2}>Thêm sản phẩm mới</Typography>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
                 <TextField fullWidth label="Tên sản phẩm" name="title" value={form.title} onChange={handleChange} required sx={{ mb: 2 }} />
-                <TextField fullWidth label="Giá" name="price" value={form.price} onChange={handleChange} required type="number" sx={{ mb: 2 }} />
-                <TextField fullWidth label="Danh mục ID" name="category_id" value={form.category_id} onChange={handleChange} required sx={{ mb: 2 }} />
+                <FormControl fullWidth sx={{ mb: 2 }} required>
+                    <InputLabel id="category-label">Danh mục sản phẩm</InputLabel>
+                    <Select
+                        labelId="category-label"
+                        id="category_id"
+                        name="category_id"
+                        value={form.category_id}
+                        label="Danh mục sản phẩm"
+                        onChange={handleChange}
+                    >
+                        {categories.map((category) => (
+                            <MenuItem key={category._id} value={category._id}>
+                                {category.category_name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
                 <TextField fullWidth label="Mô tả" name="description" value={form.description} onChange={handleChange} multiline rows={3} sx={{ mb: 2 }} />
                 <TextField fullWidth label="Vị trí" name="location" value={form.location} onChange={handleChange} sx={{ mb: 2 }} />
                 <TextField fullWidth label="Nhãn" name="label" value={form.label} onChange={handleChange} sx={{ mb: 2 }} />
                 <TextField fullWidth label="Số điện thoại liên hệ" name="contact_phone" value={form.contact_phone} onChange={handleChange} sx={{ mb: 2 }} />
                 <TextField fullWidth label="Zalo liên hệ" name="contact_zalo" value={form.contact_zalo} onChange={handleChange} sx={{ mb: 2 }} />
-                <TextField fullWidth label="User ID" name="user_id" value={form.user_id} onChange={handleChange} sx={{ mb: 2 }} />
-                <TextField fullWidth label="Trạng thái" name="status" value={form.status} onChange={handleChange} sx={{ mb: 2 }} />
                 <TextField fullWidth label="Phương thức giao hàng" name="delivery_method" value={form.delivery_method} onChange={handleChange} sx={{ mb: 2 }} />
                 <Box sx={{ mb: 2 }}>
                     <label>Hàng nặng:</label>

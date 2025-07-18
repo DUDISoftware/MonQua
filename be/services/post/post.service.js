@@ -26,7 +26,7 @@ module.exports = {
                 category_id: postData.category_id,
                 content: postData.content,
                 status: postData.status || "active",
-                image_urls: imageUrls,
+                image_url: imageUrls,
                 created_at: new Date(),
                 updated_at: new Date(),
             });
@@ -68,9 +68,9 @@ module.exports = {
             if (!post) {
                 throw new Error("Không tìm thấy bài viết");
             }
-            // Nếu yêu cầu xóa toàn bộ ảnh (image_urls là null, rỗng hoặc [])
-            if ((updateData.image_urls === null || updateData.image_urls === '' || (Array.isArray(updateData.image_urls) && updateData.image_urls.length === 0)) && Array.isArray(post.image_urls) && post.image_urls.length > 0) {
-                for (const url of post.image_urls) {
+            // Nếu yêu cầu xóa toàn bộ ảnh (image_url là null, rỗng hoặc [])
+            if ((updateData.image_url === null || updateData.image_url === '' || (Array.isArray(updateData.image_url) && updateData.image_url.length === 0)) && Array.isArray(post.image_url) && post.image_url.length > 0) {
+                for (const url of post.image_url) {
                     const matches = url.match(/\/upload\/[^/]+\/(posts\/[^.]+)\.[a-zA-Z0-9]+$/);
                     const publicId = matches ? matches[1] : null;
                     console.log('Xóa ảnh Cloudinary - publicId:', publicId);
@@ -78,10 +78,10 @@ module.exports = {
                         await deleteImageFromCloudinary(publicId);
                     }
                 }
-                updateData.image_urls = [];
-            } else if (Array.isArray(updateData.image_urls) && Array.isArray(post.image_urls)) {
-                // Xóa các ảnh bị loại khỏi mảng image_urls mới
-                const removedImages = post.image_urls.filter(oldUrl => !updateData.image_urls.includes(oldUrl));
+                updateData.image_url = [];
+            } else if (Array.isArray(updateData.image_url) && Array.isArray(post.image_url)) {
+                // Xóa các ảnh bị loại khỏi mảng image_url mới
+                const removedImages = post.image_url.filter(oldUrl => !updateData.image_url.includes(oldUrl));
                 for (const url of removedImages) {
                     const matches = url.match(/\/upload\/[^/]+\/(posts\/[^.]+)\.[a-zA-Z0-9]+$/);
                     const publicId = matches ? matches[1] : null;
@@ -100,7 +100,12 @@ module.exports = {
                         newImageUrls.push(uploadResult.secure_url);
                     }
                 }
-                updateData.image_urls = newImageUrls;
+                // Combine existing images with new ones if applicable
+                if (Array.isArray(updateData.image_url) && updateData.image_url.length > 0) {
+                    updateData.image_url = [...updateData.image_url, ...newImageUrls];
+                } else {
+                    updateData.image_url = newImageUrls;
+                }
             }
             updateData.updated_at = new Date();
             return await CommunityPostsModel.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
@@ -117,9 +122,9 @@ module.exports = {
             if (!post) {
                 throw new Error("Không tìm thấy bài viết");
             }
-            // Xóa toàn bộ ảnh trong image_urls trên Cloudinary
-            if (Array.isArray(post.image_urls) && post.image_urls.length > 0) {
-                for (const url of post.image_urls) {
+            // Xóa toàn bộ ảnh trong image_url trên Cloudinary
+            if (Array.isArray(post.image_url) && post.image_url.length > 0) {
+                for (const url of post.image_url) {
                     // Lấy publicId đúng chuẩn Cloudinary: 'posts/filename'
                     const matches = url.match(/\/upload\/[^/]+\/(posts\/[^.]+)\.[a-zA-Z0-9]+$/);
                     const publicId = matches ? matches[1] : null;

@@ -43,7 +43,16 @@ const CategoryProductsList = () => {
 
     return (
         <Box sx={{ padding: 3, backgroundColor: '#fff', borderRadius: 2, boxShadow: 1 }}>
-            <Typography variant="h6" fontWeight={600} mb={2}>Danh sách các danh mục sản phẩm</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" fontWeight={600}>Danh sách các danh mục sản phẩm</Typography>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => navigate('/admin/category-products/add')}
+                >
+                    + Thêm danh mục
+                </Button>
+            </Box>
             <Box sx={{ overflow: 'auto', width: '100%' }}>
                 <Table aria-label="bảng danh mục" sx={{ whiteSpace: "nowrap", mt: 2 }}>
                     <TableHead>
@@ -60,7 +69,7 @@ const CategoryProductsList = () => {
                             categories.map((cat, idx) => (
                                 <TableRow key={cat._id}>
                                     <TableCell><Typography sx={{ fontSize: "15px", fontWeight: "500" }}>{idx + 1}</Typography></TableCell>
-                                    <TableCell><Typography sx={{ fontSize: "15px", fontWeight: "500" }}>{cat.name}</Typography></TableCell>
+                                    <TableCell><Typography sx={{ fontSize: "15px", fontWeight: "500" }}>{cat.category_name}</Typography></TableCell>
                                     <TableCell><Typography sx={{ fontSize: "15px", fontWeight: "500" }}>{cat.description}</Typography></TableCell>
                                     <TableCell align="center">
                                         <Button variant="outlined" color="primary" size="small" onClick={() => navigate(`/admin/category-products/${cat._id}`)} sx={{ mr: 1 }}>Xem</Button>
@@ -71,7 +80,7 @@ const CategoryProductsList = () => {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={4} align="center">
+                                <TableCell colSpan={5} align="center">
                                     <Typography variant="subtitle1">Không có danh mục nào.</Typography>
                                 </TableCell>
                             </TableRow>

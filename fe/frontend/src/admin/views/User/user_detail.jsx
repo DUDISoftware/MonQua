@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Box, Button, Snackbar, Alert } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getUsers, deleteUser } from "../../../api/User.api.js";
+import { getUserById, deleteUser } from "../../../api/user.api";
 
 const UserDetail = () => {
     const { id } = useParams();

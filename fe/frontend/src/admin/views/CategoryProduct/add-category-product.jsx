@@ -7,7 +7,7 @@ import { addCategory } from "../../../api/product.category.api.js";
 const AddCategoryProduct = () => {
     const navigate = useNavigate();
     const [form, setForm] = useState({
-        name: "",
+        category_name: "",
         description: ""
     });
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
@@ -38,8 +38,8 @@ const AddCategoryProduct = () => {
                 <TextField
                     fullWidth
                     label="Tên danh mục"
-                    name="name"
-                    value={form.name}
+                    name="category_name"
+                    value={form.category_name}
                     onChange={handleChange}
                     required
                     sx={{ mb: 2 }}

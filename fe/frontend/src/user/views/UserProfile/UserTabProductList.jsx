@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ProductItem from "./ProductCard";
-import { getProductsByUser } from "../../../api/productApi";
+import { getProductsByUser } from "../../../api/product.api";
 import ProfileTabs from "../Profile/Tabs/ProfileTabs";
 
 const UserTabProductList = ({ userId, activeTab, onTabChange, isCurrentUser }) => {

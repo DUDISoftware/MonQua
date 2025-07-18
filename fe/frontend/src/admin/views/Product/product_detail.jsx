@@ -3,24 +3,52 @@ import React, { useEffect, useState } from 'react';
 import { Typography, Box, Button, Snackbar, Alert } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProductById, deleteProduct } from '../../../api/product.api.js';
+import { getCategories } from '../../../api/product.category.api.js';
+import { getUserById } from '../../../api/user.api.js';
 
 const ProductDetail = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [user, setUser] = useState(null);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
 
     useEffect(() => {
+        // Fetch categories
+        const fetchCategories = async () => {
+            try {
+                const data = await getCategories(token);
+                const list = data.data || data.categories || data;
+                setCategories(Array.isArray(list) ? list : []);
+            } catch (error) {
+                setSnackbar({ open: true, message: 'Không thể tải danh sách danh mục', severity: 'error' });
+            }
+        };
+
+        // Fetch product details
         const fetchProduct = async () => {
             try {
                 const data = await getProductById(id, token);
                 const prod = data.data?.[0] || data.data || data.product || data;
                 setProduct(prod);
+
+                // Fetch user information if product has user_id
+                if (prod.user_id) {
+                    try {
+                        const userData = await getUserById(prod.user_id, token);
+                        setUser(userData.data?.[0] || userData.data || userData);
+                    } catch (userError) {
+                        console.error('Error fetching user:', userError);
+                    }
+                }
             } catch (error) {
                 setSnackbar({ open: true, message: 'Không thể tải thông tin sản phẩm', severity: 'error' });
             }
         };
+
+        fetchCategories();
         fetchProduct();
     }, [id, token]);
 
@@ -46,14 +74,19 @@ const ProductDetail = () => {
             <Typography variant="subtitle1"><strong>Tên:</strong> {product.title}</Typography>
             <Typography variant="subtitle1"><strong>Slug:</strong> {product.slug}</Typography>
             <Typography variant="subtitle1"><strong>Giá:</strong> {product.price}</Typography>
-            <Typography variant="subtitle1"><strong>Danh mục:</strong> {product.category_id || (product.category?.name || product.category)}</Typography>
+            <Typography variant="subtitle1"><strong>Danh mục:</strong> {
+                categories.find(cat => cat._id === product.category_id)?.category_name ||
+                product.category?.category_name ||
+                product.category_id ||
+                "N/A"
+            }</Typography>
             <Typography variant="subtitle1"><strong>Mô tả:</strong> {product.description}</Typography>
             <Typography variant="subtitle1"><strong>Vị trí:</strong> {product.location}</Typography>
             <Typography variant="subtitle1"><strong>Nhãn:</strong> {product.label}</Typography>
             <Typography variant="subtitle1"><strong>Hàng nặng:</strong> {product.is_heavy ? 'Có' : 'Không'}</Typography>
             <Typography variant="subtitle1"><strong>Số điện thoại liên hệ:</strong> {product.contact_phone}</Typography>
             <Typography variant="subtitle1"><strong>Zalo liên hệ:</strong> {product.contact_zalo}</Typography>
-            <Typography variant="subtitle1"><strong>User ID:</strong> {product.user_id}</Typography>
+            <Typography variant="subtitle1"><strong>Người đăng:</strong> {user ? `${user.name} (${user.email})` : product.user_id}</Typography>
             <Typography variant="subtitle1"><strong>Trạng thái:</strong> {product.status}</Typography>
             <Typography variant="subtitle1"><strong>Phương thức giao hàng:</strong> {product.delivery_method}</Typography>
             <Typography variant="subtitle1"><strong>Lượt xem:</strong> {product.view_count}</Typography>
@@ -89,3 +122,4 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
+

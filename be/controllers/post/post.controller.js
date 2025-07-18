@@ -72,7 +72,7 @@ router.get("/category/:categoryId", async (req, res) => {
 });
 
 // 4. Cập nhật/Chỉnh sửa bài viết
-router.put("/:id", async (req, res) => {
+router.put("/:id", uploadImage.array('image_url', 5), async (req, res) => {
     try {
         const id = req.params.id;
         const updateData = req.body;
