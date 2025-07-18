@@ -1,17 +1,35 @@
 import React from "react";
 import PostItem from "./PostItem";
 
-const posts = [
-    { id: 1, author: "Nguyễn Văn A", content: "Mình vừa tặng sách cho bạn nhỏ ở Q3, cảm giác rất vui!", time: "2 giờ trước" },
-    { id: 2, author: "Trần Thị B", content: "Có ai cần áo khoác nữ không? Mình còn mới 90%", time: "5 giờ trước" },
-];
+const PostList = ({ posts, loading, error, activeTab, isLoggedIn }) => {
+    if (loading && posts.length === 0) {
+        return (
+            <div className="flex justify-center py-10">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#22C55E]"></div>
+            </div>
+        );
+    }
 
-const PostList = () => (
-    <div className="flex flex-col gap-6">
-        {posts.map(post => (
-            <PostItem key={post.id} post={post} />
-        ))}
-    </div>
-);
+    if (error) {
+        return <div className="text-red-500 text-center py-5">{error}</div>;
+    }
+
+    if (posts.length === 0) {
+        return <div className="text-gray-500 text-center py-5">Chưa có bài viết nào</div>;
+    }
+
+    // Filter posts based on activeTab if needed
+    console.log("Posts in PostList component:", posts);
+    // Hiện tại không có trường type trong API response, nên tạm thời hiển thị tất cả
+    const filteredPosts = posts;
+
+    return (
+        <div className="flex flex-col gap-6">
+            {filteredPosts.map(post => (
+                <PostItem key={post._id} post={post} isLoggedIn={isLoggedIn} />
+            ))}
+        </div>
+    );
+};
 
 export default PostList;

@@ -1,0 +1,49 @@
+/* Facebook-style Post Editor CSS */
+.fb-post-editor-overlay {
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.fb-post-editor {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Custom scrollbar for the post editor */
+.fb-post-editor::-webkit-scrollbar {
+  width: 8px;
+}
+
+.fb-post-editor::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.fb-post-editor::-webkit-scrollbar-thumb {
+  background: #22c55e;
+  opacity: 0.7;
+  border-radius: 10px;
+}
+
+.fb-post-editor::-webkit-scrollbar-thumb:hover {
+  background: #16a34a;
+}
