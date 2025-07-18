@@ -1,31 +1,32 @@
 import React, { useEffect, useState } from "react";
+import { FiPhone, FiVideo, FiMoreVertical } from "react-icons/fi";
 import { getUserById } from "../../../../api/UserApi";
 import socket from "../../../../socket";
 
 const ChatHeader = ({ userId }) => {
   const [user, setUser] = useState(null);
   const [isOnline, setIsOnline] = useState(false);
-useEffect(() => {
-  if (!userId) return;
 
-  socket.emit("checkOnline", userId, (online) => {
-    setIsOnline(online);
-  });
+  useEffect(() => {
+    if (!userId) return;
 
-  socket.on("userOnline", (id) => {
-    if (id === userId) setIsOnline(true);
-  });
+    socket.emit("checkOnline", userId, (online) => {
+      setIsOnline(online);
+    });
 
-  socket.on("userOffline", (id) => {
-    if (id === userId) setIsOnline(false);
-  });
+    socket.on("userOnline", (id) => {
+      if (id === userId) setIsOnline(true);
+    });
 
-  return () => {
-    socket.off("userOnline");
-    socket.off("userOffline");
-  };
-}, [userId]);
+    socket.on("userOffline", (id) => {
+      if (id === userId) setIsOnline(false);
+    });
 
+    return () => {
+      socket.off("userOnline");
+      socket.off("userOffline");
+    };
+  }, [userId]);
 
   useEffect(() => {
     if (!userId) return;
@@ -33,9 +34,9 @@ useEffect(() => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
-        const data = await getUserById(userId, token);
-        if (data?.data?.length > 0) {
-          setUser(data.data[0]);
+        const res = await getUserById(userId, token);
+        if (res?.data?.length > 0) {
+          setUser(res.data[0]);
         }
       } catch (err) {
         console.error("❌ Lỗi lấy thông tin người dùng:", err.message);
@@ -48,27 +49,28 @@ useEffect(() => {
   if (!user) return null;
 
   return (
-    <div className="flex items-center justify-between border-b border-[#E6F4F1] px-6 py-4 bg-[#F6FCFA]">
+    <div className="flex items-center justify-between px-6 py-4 bg-[#F6FCFA] border-b border-[#E6F4F1]">
       <div className="flex items-center gap-3">
         <img
           src={
             user.avatar_url?.startsWith("http")
               ? user.avatar_url
-              : `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                  user.name || "User"
-                )}`
+              : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "User")}`
           }
           alt={user.name}
           className="w-10 h-10 rounded-full object-cover"
         />
         <div>
-          <div className="font-semibold text-gray-900">
-            {user.name || "Người dùng"}
-          </div>
-          <div className={`text-xs ${isOnline ? "text-green-500" : "text-gray-400"}`}>
+          <div className="font-semibold">{user.name || "Người dùng"}</div>
+          <div className={`text-sm ${isOnline ? "text-green-500" : "text-gray-400"}`}>
             {isOnline ? "Đang hoạt động" : "Ngoại tuyến"}
           </div>
         </div>
+      </div>
+      <div className="flex gap-4 text-green-500 text-xl">
+        <FiPhone />
+        <FiVideo />
+        <FiMoreVertical />
       </div>
     </div>
   );

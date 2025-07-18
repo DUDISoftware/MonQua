@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams, useLocation } from "react-router-dom";
 import ProductBanner from "./Banner/ProductBanner";
 import SearchBar from "./SearchFilter/SearchBar";
 import FilterBar from "./SearchFilter/FilterBar";
@@ -15,8 +16,14 @@ const ProductListingPage = () => {
   const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [page, setPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState("");
 
+  const [selectedQuality, setSelectedQuality] = useState("");
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation(); // theo dõi URL
+  const categoryFromURL = searchParams.get("category") || "";
+
+  // Fetch sản phẩm từ API
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -27,6 +34,7 @@ const ProductListingPage = () => {
           image: item.image_url,
           status: item.status,
           desc: item.description,
+          quality: item.quality,
           location: item.location,
           category_id: item.category_id?._id,
           label:
@@ -35,7 +43,6 @@ const ProductListingPage = () => {
               : "Quan tâm nhiều",
         }));
         setProducts(mapped);
-        setFiltered(mapped); // Ban đầu là tất cả
       } catch (err) {
         console.error("Lỗi khi lấy danh sách sản phẩm:", err.message);
       }
@@ -44,28 +51,47 @@ const ProductListingPage = () => {
     fetchProducts();
   }, []);
 
-  // Lọc theo danh mục mỗi khi category thay đổi
+  // Lọc lại khi URL thay đổi hoặc quality thay đổi
   useEffect(() => {
-    if (!selectedCategory) {
-      setFiltered(products);
-    } else {
-      const filteredByCat = products.filter(
-        (p) => p.category_id === selectedCategory
-      );
-      setFiltered(filteredByCat);
+    let temp = [...products];
+
+    if (categoryFromURL) {
+      temp = temp.filter((p) => p.category_id === categoryFromURL);
     }
-    setPage(1); // reset về trang đầu
-  }, [selectedCategory, products]);
+
+    if (selectedQuality) {
+      temp = temp.filter((p) => p.quality === selectedQuality);
+    }
+
+    setFiltered(temp);
+    setPage(1);
+  }, [location, selectedQuality, products]); // 👈 re-run khi URL đổi
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginatedProducts = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // Hàm xử lý thay đổi danh mục
+  const handleCategoryChange = (catId) => {
+    const params = new URLSearchParams(searchParams);
+    if (catId) {
+      params.set("category", catId);
+    } else {
+      params.delete("category");
+    }
+    setSearchParams(params); // tự động update URL và re-render
+  };
 
   return (
     <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-6 flex flex-col md:flex-row gap-8">
       <div className="flex-1">
         <ProductBanner />
         <SearchBar />
-        <FilterBar onCategoryChange={setSelectedCategory} />
+        <FilterBar
+          onCategoryChange={handleCategoryChange}
+          onQualityChange={setSelectedQuality}
+          selectedCategory={categoryFromURL}
+          selectedQuality={selectedQuality}
+        />
         <ProductList products={paginatedProducts} />
         {totalPages > 1 && (
           <Pagination current={page} total={totalPages} onChange={setPage} />

@@ -4,6 +4,9 @@ import { getConversationsByUserId } from "../../../../api/chatApi";
 
 const ChatList = ({ onSelectConversation, onChatsLoaded }) => {
   const [chats, setChats] = useState([]);
+  const uniqueChats = chats.filter((chat, index, self) =>
+    index === self.findIndex((c) => c._id === chat._id)
+  );
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
@@ -13,8 +16,12 @@ const ChatList = ({ onSelectConversation, onChatsLoaded }) => {
       try {
         const res = await getConversationsByUserId(userId);
         const data = Array.isArray(res.data) ? res.data : [];
-        setChats(data);
-        onChatsLoaded?.(data); // ✅ Truyền lên MessengerPage
+
+        // Lọc trùng theo _id
+        const uniqueData = Array.from(new Map(data.map(chat => [chat._id, chat])).values());
+
+        setChats(uniqueData);
+        onChatsLoaded?.(uniqueData);
       } catch (err) {
         console.error("Lỗi khi lấy danh sách hội thoại:", err);
       }
@@ -25,7 +32,7 @@ const ChatList = ({ onSelectConversation, onChatsLoaded }) => {
 
   return (
     <div className="overflow-y-auto px-2 py-3">
-      {chats.map((chat) => (
+      {uniqueChats.map((chat) => (
         <ChatListItem
           key={chat._id}
           chat={chat}
@@ -37,6 +44,5 @@ const ChatList = ({ onSelectConversation, onChatsLoaded }) => {
     </div>
   );
 };
-
 
 export default ChatList;

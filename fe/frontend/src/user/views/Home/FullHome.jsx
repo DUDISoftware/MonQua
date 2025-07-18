@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import BannerSection from "./Banner/BannerSection";
 import SearchBar from "./SearchFilter/SearchBar";
-import FilterBar from "./SearchFilter/FilterBar";
 import PopularProducts from "./ProductSection/PopularProducts";
 import CategoryProducts from "./ProductSection/CategoryProducts";
 import ProductCategories from "./ProductSection/ProductCategories";
@@ -33,15 +32,9 @@ const FullHome = () => {
         <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-6 flex flex-col items-center">
             <BannerSection />
             <SearchBar />
-            <FilterBar />
-            <PopularProducts />
             <CategoryProducts category={selectedCategory} />
-            <ProductCategories
-                selected={selectedCategory}
-                onSelect={setSelectedCategory}
-                categories={categories}
-            />
-
+            <ProductCategories categories={categories} />
+            <PopularProducts />
             <HowItWorks />
             <WhyUs />
             <CustomerReviews />
