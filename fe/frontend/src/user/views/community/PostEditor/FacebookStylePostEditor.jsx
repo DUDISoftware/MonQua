@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { addPost } from "../../../../api/post.api.js";
-import { getUserById } from "../../../../api/User.api.js";
+import { getUserById } from "../../../../api/user.api";
 import "./FacebookPostEditor.css";
 
 const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = [], isLoggedIn, initialCategory = "" }) => {
@@ -139,7 +139,7 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
 
             if (images.length > 0) {
                 images.forEach(image => {
-                    formData.append("image_urls", image);
+                    formData.append("image_url", image);
                 });
             }
 

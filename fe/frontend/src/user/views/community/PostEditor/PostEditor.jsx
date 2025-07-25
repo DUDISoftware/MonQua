@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { addPost } from "../../../../api/post.api.js";
-import { getUserById } from "../../../../api/User.api.js";
+import { getUserById } from "../../../../api/user.api";
 
 const PostEditor = ({ onPostCreated, categories = [], isLoggedIn }) => {
     const [content, setContent] = useState("");
@@ -92,7 +92,7 @@ const PostEditor = ({ onPostCreated, categories = [], isLoggedIn }) => {
 
             if (images.length > 0) {
                 images.forEach(image => {
-                    formData.append("image_urls", image);
+                    formData.append("image_url", image);
                 });
             }
 

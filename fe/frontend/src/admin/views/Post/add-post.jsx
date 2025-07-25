@@ -10,11 +10,10 @@ import { getPostCategories } from "../../../api/post.category.api.js";
 const AddPost = () => {
     const navigate = useNavigate();
     const [form, setForm] = useState({
-        title: "",
         content: "",
         category_id: "",
         status: "active",
-        image_urls: []
+        image_url: []
     });
     const [images, setImages] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -50,14 +49,14 @@ const AddPost = () => {
         try {
             const formData = new FormData();
             Object.keys(form).forEach(key => {
-                if (key !== 'image_urls') {
+                if (key !== 'image_url') {
                     formData.append(key, form[key]);
                 }
             });
 
             if (images.length > 0) {
                 images.forEach((file) => {
-                    formData.append('image_urls', file);
+                    formData.append('image_url', file);
                 });
             }
 
@@ -75,15 +74,6 @@ const AddPost = () => {
         <Box sx={{ padding: 3, backgroundColor: '#fff', borderRadius: 2, boxShadow: 1 }}>
             <Typography variant="h6" fontWeight={600} mb={2}>Thêm bài viết mới</Typography>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
-                <TextField
-                    fullWidth
-                    label="Tiêu đề bài viết"
-                    name="title"
-                    value={form.title}
-                    onChange={handleChange}
-                    required
-                    sx={{ mb: 2 }}
-                />
                 <TextField
                     fullWidth
                     label="Nội dung bài viết"
@@ -106,7 +96,7 @@ const AddPost = () => {
                     >
                         {categories.map((category) => (
                             <MenuItem key={category._id} value={category._id}>
-                                {category.name}
+                                {category.name || category.category_name}
                             </MenuItem>
                         ))}
                     </Select>

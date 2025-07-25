@@ -43,7 +43,16 @@ const CategoryPostsList = () => {
 
     return (
         <Box sx={{ padding: 3, backgroundColor: '#fff', borderRadius: 2, boxShadow: 1 }}>
-            <Typography variant="h6" fontWeight={600} mb={2}>Danh sách các danh mục bài viết</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" fontWeight={600}>Danh sách các danh mục bài viết</Typography>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => navigate('/admin/category-posts/add')}
+                >
+                    + Thêm danh mục
+                </Button>
+            </Box>
             <Box sx={{ overflow: 'auto', width: '100%' }}>
                 <Table aria-label="bảng danh mục" sx={{ whiteSpace: "nowrap", mt: 2 }}>
                     <TableHead>

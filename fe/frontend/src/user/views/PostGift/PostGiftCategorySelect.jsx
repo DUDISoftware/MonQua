@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { getCategories } from "../../../api/product.category.api";
 
 const PostGiftCategorySelect = ({ value, onChange }) => {
   const [categories, setCategories] = useState([]);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/categories");
-        setCategories(res.data);
+        const response = await getCategories(token);
+        const categoriesData = response.data || response.categories || response;
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
       } catch (err) {
         console.error("Lỗi khi lấy danh mục:", err);
       }
     };
     fetchCategories();
-  }, []);
+  }, [token]);
 
   return (
     <div>
@@ -27,7 +29,7 @@ const PostGiftCategorySelect = ({ value, onChange }) => {
         <option value="">Chọn Danh Mục</option>
         {categories.map((cat) => (
           <option key={cat._id} value={cat._id}>
-            {cat.name}
+            {cat.category_name}
           </option>
         ))}
       </select>
