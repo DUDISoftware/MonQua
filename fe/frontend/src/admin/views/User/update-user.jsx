@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
     Typography, Box, TextField, Button, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem
 } from '@mui/material';
-import { getUserById, updateUser } from "../../../api/User.api";
+import { getUserById, updateUser } from "../../../api/user.api";
 import { useParams, useNavigate } from "react-router-dom";
 
 const UpdateUser = () => {
