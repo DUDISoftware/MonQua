@@ -28,6 +28,10 @@ const apiRequest = async (method, url, data = {}, token) => {
 export const addComment = (postId, data, token) =>
     apiRequest("post", `/posts/comment/add/${postId}`, data, token);
 
+// 1b. Trả lời bình luận (reply)
+export const replyComment = (postId, commentId, data, token) =>
+    apiRequest("post", `/posts/comment/add/${postId}/${commentId}`, data, token);
+
 // 2. Cập nhật/Chỉnh sửa bình luận
 export const updateComment = (id, data, token) =>
     apiRequest("put", `/posts/comment/update/${id}`, data, token);

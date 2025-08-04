@@ -29,7 +29,7 @@ export const addProduct = (formData, token) =>
   apiRequest("post", "/Product/create", formData, token);
 
 // 2. Lấy danh sách sản phẩm
-export const getProducts = (token) =>
+export const getProducts = (token = null) =>
   apiRequest("get", "/Product/list", {}, token);
 
 // 2b. Lấy danh sách sản phẩm theo user
@@ -37,7 +37,7 @@ export const getProductsByUser = (userId, token) =>
   apiRequest("get", `/Product/user/${userId}`, {}, token);
 
 // 3. Lấy chi tiết sản phẩm
-export const getProductById = (id, token) =>
+export const getProductById = (id, token = null) =>
   apiRequest("get", `/Product/${id}`, {}, token);
 
 // 4. Cập nhật/Chỉnh sửa sản phẩm
@@ -49,6 +49,22 @@ export const deleteProduct = (id, token) =>
   apiRequest("delete", `/Product/${id}`, {}, token);
 
 // 6. Lọc sản phẩm theo danh mục
-export const getProductsByCategory = (categoryId, token) =>
+export const getProductsByCategory = (categoryId, token = null) =>
   apiRequest("get", `/Product/category/${categoryId}`, {}, token);
+
+// 6b. Lấy sản phẩm liên quan
+export const getRelatedProducts = (productId, limit = 4, token = null) =>
+  apiRequest("get", `/Product/${productId}/related?limit=${limit}`, {}, token);
+
+// 7. API Location - Lấy danh sách tỉnh/thành
+export const getProvinces = (token) =>
+  apiRequest("get", "/Product/location/provinces", {}, token);
+
+// 8. API Location - Lấy danh sách quận/huyện theo tỉnh
+export const getDistricts = (provinceCode, token) =>
+  apiRequest("get", `/Product/location/districts/${provinceCode}`, {}, token);
+
+// 9. API Location - Lấy danh sách xã/phường theo quận
+export const getWards = (districtCode, token) =>
+  apiRequest("get", `/Product/location/wards/${districtCode}`, {}, token);
 
