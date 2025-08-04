@@ -30,7 +30,21 @@ router.post("/create", verifyToken, checkMultiRole(["user", "admin"]), uploadIma
 router.get("/list", async (req, res) => {
     try {
         const filters = req.query || {};
-        const posts = await postService.getAllPosts(filters);
+        // Lấy userId từ token nếu có (không bắt buộc)
+        let userId = null;
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            try {
+                const jwt = require('jsonwebtoken');
+                const token = authHeader.substring(7);
+                const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+                userId = decoded.user._id;
+            } catch (error) {
+                // Token không hợp lệ, nhưng vẫn tiếp tục không cần userId
+            }
+        }
+
+        const posts = await postService.getAllPosts(filters, userId);
         return res.status(200).json({ error: 0, error_text: "Lấy danh sách bài viết thành công", data: posts });
     } catch (error) {
         console.error("Lỗi lấy danh sách bài viết:", error.message);

@@ -15,6 +15,10 @@ router.post("/create", verifyToken, checkMultiRole(["user", "admin"]), uploadIma
         const productData = req.body;
         const files = req.files;
         productData.user_id = req.userData?.user?._id;
+
+        // Log để debug
+        console.log('Product data received:', productData);
+
         if (!productData || !productData.title || !productData.category_id) {
             return res.status(400).json({ error: 400, error_text: "Thiếu dữ liệu sản phẩm", data: [] });
         }
@@ -118,6 +122,97 @@ router.get("/category/:categoryId", async (req, res) => {
     } catch (error) {
         console.error("Lỗi lấy sản phẩm theo danh mục:", error.message);
         return res.status(500).json({ error: 500, error_text: "Lỗi lấy sản phẩm theo danh mục.", data: [] });
+    }
+});
+
+// 7. API location - Lấy danh sách tỉnh/thành
+router.get("/location/provinces", async (req, res) => {
+    try {
+        const axios = require('axios');
+        const response = await axios.get("https://provinces.open-api.vn/api/p/");
+        return res.status(200).json({
+            error: 0,
+            error_text: "Lấy danh sách tỉnh/thành thành công",
+            data: response.data
+        });
+    } catch (error) {
+        console.error("Lỗi lấy danh sách tỉnh/thành:", error.message);
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi lấy danh sách tỉnh/thành.",
+            data: []
+        });
+    }
+});
+
+// 8. API location - Lấy danh sách quận/huyện theo tỉnh
+router.get("/location/districts/:provinceCode", async (req, res) => {
+    try {
+        const { provinceCode } = req.params;
+        const axios = require('axios');
+        const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+        return res.status(200).json({
+            error: 0,
+            error_text: "Lấy danh sách quận/huyện thành công",
+            data: response.data.districts || []
+        });
+    } catch (error) {
+        console.error("Lỗi lấy danh sách quận/huyện:", error.message);
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi lấy danh sách quận/huyện.",
+            data: []
+        });
+    }
+});
+
+// 9. API location - Lấy danh sách xã/phường theo quận
+router.get("/location/wards/:districtCode", async (req, res) => {
+    try {
+        const { districtCode } = req.params;
+        const axios = require('axios');
+        const response = await axios.get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+        return res.status(200).json({
+            error: 0,
+            error_text: "Lấy danh sách xã/phường thành công",
+            data: response.data.wards || []
+        });
+    } catch (error) {
+        console.error("Lỗi lấy danh sách xã/phường:", error.message);
+        return res.status(500).json({
+            error: 500,
+            error_text: "Lỗi lấy danh sách xã/phường.",
+            data: []
+        });
+    }
+});
+
+// 8. Lấy sản phẩm liên quan
+router.get("/:id/related", async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const { limit = 4 } = req.query;
+
+        // Lấy thông tin sản phẩm hiện tại để biết category
+        const currentProduct = await productService.getProductById(productId);
+        if (!currentProduct) {
+            return res.status(404).json({ error: 404, error_text: "Không tìm thấy sản phẩm", data: [] });
+        }
+
+        const relatedProducts = await productService.getRelatedProducts(
+            productId,
+            currentProduct.category_id?._id || currentProduct.category_id,
+            parseInt(limit)
+        );
+
+        return res.status(200).json({
+            error: 0,
+            error_text: "Lấy sản phẩm liên quan thành công",
+            data: relatedProducts
+        });
+    } catch (error) {
+        console.error("Lỗi lấy sản phẩm liên quan:", error.message);
+        return res.status(500).json({ error: 500, error_text: "Lỗi lấy sản phẩm liên quan.", data: [] });
     }
 });
 

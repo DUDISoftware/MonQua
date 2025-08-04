@@ -2,6 +2,7 @@
 const CommunityPostsModel = require('../../models/post/community_posts.model');
 const PostCategoriesModel = require('../../models/post/post_categories.model');
 const UserModel = require('../../models/auth/user.model');
+const PostLikesModel = require('../../models/post/post_likes.model');
 const { updateImageOnCloudinary, deleteImageFromCloudinary } = require('../../middleware/cloudinary.middleware');
 
 module.exports = {
@@ -38,9 +39,31 @@ module.exports = {
     },
 
     // 2. Lấy tất cả bài viết
-    async getAllPosts(filters = {}) {
+    async getAllPosts(filters = {}, userId = null) {
         try {
-            return await CommunityPostsModel.find(filters);
+            const posts = await CommunityPostsModel.find(filters)
+                .populate('user_id', 'name email')
+                .populate('category_id', 'name description')
+                .sort({ created_at: -1 })
+                .lean();
+
+            // Thêm thông tin like cho mỗi post
+            const postsWithLikes = await Promise.all(posts.map(async (post) => {
+                const likeCount = await PostLikesModel.countDocuments({ post_id: post._id });
+                let isLiked = false;
+
+                if (userId) {
+                    isLiked = await PostLikesModel.exists({ post_id: post._id, user_id: userId });
+                }
+
+                return {
+                    ...post,
+                    likeCount,
+                    isLiked: !!isLiked
+                };
+            }));
+
+            return postsWithLikes;
         } catch (error) {
             console.error("Lỗi khi lấy danh sách bài viết:", error.message);
             throw new Error("Lỗi khi lấy danh sách bài viết.");

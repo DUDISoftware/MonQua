@@ -5,10 +5,25 @@ const productSchema = new mongoose.Schema({
   title: { type: String, required: true },
   slug: { type: String, required: true, unique: true }, // Slug cho sản phẩm
   description: String,
-  category_id: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+  category_id: { type: mongoose.Schema.Types.ObjectId, ref: "ProductCategory" },
   image_url: String,
   sub_images_urls: [String], // Mảng các URL ảnh phụ
-  location: String,
+
+  //---------------------API provinces.open-api.vn---------------------
+  location: String, // Địa chỉ đầy đủ (chuỗi kết hợp)
+
+  // Thông tin địa chỉ chi tiết từ API tỉnh thành
+  location_details: {
+    province_code: { type: String }, // Mã tỉnh/thành phố
+    province_name: { type: String }, // Tên tỉnh/thành phố
+    district_code: { type: String }, // Mã quận/huyện
+    district_name: { type: String }, // Tên quận/huyện
+    ward_code: { type: String }, // Mã xã/phường
+    ward_name: { type: String }, // Tên xã/phường
+    specific_address: { type: String }, // Địa chỉ cụ thể (số nhà, tên đường)
+    full_address: { type: String } // Địa chỉ đầy đủ đã format
+  },
+  //--------------------------------------------------------------------
   label: { type: String, default: "Mới" }, // Nhãn hiển thị (Mới, Hot)
   is_heavy: Boolean,
   contact_phone: String,
