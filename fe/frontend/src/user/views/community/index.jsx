@@ -8,7 +8,7 @@ import CommunityReviews from "./Sidebar/CommunityReviews";
 import LatestPosts from "./Sidebar/LatestPosts";
 import CommunityTags from "./Sidebar/CommunityTags";
 import { getPosts, getPostsByCategory } from "../../../api/post.api.js";
-import { getUsers } from "../../../api/User.api.js";
+import { getUsers } from "../../../api/user.api.js";
 import { getPostCategories } from "../../../api/post.category.api.js";
 import axios from "axios";
 
@@ -100,17 +100,31 @@ const CommunityPage = () => {
                 const postsData = response.data.data || response.data.posts || response.data || [];
                 console.log("API response:", response);
                 console.log("Posts data extracted:", postsData);
+                console.log("Posts data is array:", Array.isArray(postsData));
+                console.log("Posts data length:", postsData?.length);
 
                 // Làm giàu dữ liệu posts với thông tin tác giả và thời gian
                 const enrichedPosts = Array.isArray(postsData) ? postsData.map(post => {
-                    const user = users[post.user_id] || {};
+                    // Lấy thông tin user từ API response hoặc từ users state (nếu đã đăng nhập)
+                    const userFromPost = post.user_id; // Dữ liệu đã được populate từ backend
+                    const userFromState = users[post.user_id?._id] || {};
+
+                    // Ưu tiên dữ liệu từ API response (đã được populate)
+                    let userName = "Người dùng";
+                    if (typeof userFromPost === 'object' && userFromPost?.name) {
+                        userName = userFromPost.name;
+                    } else if (userFromState?.name) {
+                        userName = userFromState.name;
+                    } else if (typeof post.user_id === 'string') {
+                        userName = `Người dùng #${post.user_id.substring(0, 5)}`;
+                    }
+
                     const category = JSON.parse(sessionStorage.getItem("categoriesMap") || "{}")[post.category_id] || {};
 
-                    // Nếu không có thông tin user (chưa đăng nhập), chỉ hiển thị User ID
                     return {
                         ...post,
-                        author: user.name || `Người dùng #${post.user_id?.substring(0, 5) || "Unknown"}`,
-                        authorAvatar: user.avatar,
+                        author: userName,
+                        authorAvatar: userFromPost?.avatar || userFromState?.avatar,
                         categoryName: category.name || "Chưa phân loại",
                         time: new Date(post.created_at || Date.now()).toLocaleString()
                     };
@@ -127,7 +141,7 @@ const CommunityPage = () => {
         };
 
         fetchPosts();
-    }, [refresh, activeTab, categoryFilter, users]);
+    }, [refresh, activeTab, categoryFilter]); // Bỏ users dependency để posts load ngay
 
     // Không cần hàm này nữa vì đã sử dụng trực tiếp axios trong useEffect
 

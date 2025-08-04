@@ -1,20 +1,45 @@
 import React, { useState, useEffect } from "react";
+import { getPostCategories } from "../../../../api/post.category.api.js";
 import FacebookStylePostEditor from "./FacebookStylePostEditor";
 
 const PostEditorButton = ({ onPostCreated, categories = [], isLoggedIn }) => {
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("");
+    const [allCategories, setAllCategories] = useState(categories);
+    const token = localStorage.getItem("token");
+
     const userInfo = {
         name: localStorage.getItem("userName") || "Bạn",
         avatar: localStorage.getItem("userAvatar") || "",
     };
 
-    // Set default category if available
+    // Set default category if available and fetch categories
     useEffect(() => {
-        if (categories.length > 0 && !selectedCategory) {
-            setSelectedCategory(categories[0]._id);
+        const fetchCategories = async () => {
+            if (categories.length === 0 && token) {
+                try {
+                    const response = await getPostCategories(token);
+                    const categoryList = response.data || response.categories || response;
+                    const validCategories = Array.isArray(categoryList) ? categoryList : [];
+                    setAllCategories(validCategories);
+
+                    if (validCategories.length > 0 && !selectedCategory) {
+                        setSelectedCategory(validCategories[0]._id);
+                    }
+                } catch (error) {
+                    console.error("Error fetching categories:", error);
+                }
+            } else {
+                setAllCategories(categories);
+            }
+        };
+
+        fetchCategories();
+
+        if (allCategories.length > 0 && !selectedCategory) {
+            setSelectedCategory(allCategories[0]._id);
         }
-    }, [categories, selectedCategory]);
+    }, [categories, selectedCategory, token, allCategories]);
 
     const openEditor = () => {
         setIsEditorOpen(true);
@@ -82,7 +107,7 @@ const PostEditorButton = ({ onPostCreated, categories = [], isLoggedIn }) => {
                 isOpen={isEditorOpen}
                 onClose={closeEditor}
                 onPostCreated={onPostCreated}
-                categories={categories}
+                categories={allCategories}
                 isLoggedIn={isLoggedIn}
                 initialCategory={selectedCategory}
             />
