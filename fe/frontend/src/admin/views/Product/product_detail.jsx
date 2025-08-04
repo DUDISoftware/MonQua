@@ -73,7 +73,6 @@ const ProductDetail = () => {
             <Typography variant="h5" fontWeight={600} mb={2}>Chi tiết sản phẩm</Typography>
             <Typography variant="subtitle1"><strong>Tên:</strong> {product.title}</Typography>
             <Typography variant="subtitle1"><strong>Slug:</strong> {product.slug}</Typography>
-            <Typography variant="subtitle1"><strong>Giá:</strong> {product.price}</Typography>
             <Typography variant="subtitle1"><strong>Danh mục:</strong> {
                 categories.find(cat => cat._id === product.category_id)?.category_name ||
                 product.category?.category_name ||
@@ -81,7 +80,30 @@ const ProductDetail = () => {
                 "N/A"
             }</Typography>
             <Typography variant="subtitle1"><strong>Mô tả:</strong> {product.description}</Typography>
-            <Typography variant="subtitle1"><strong>Vị trí:</strong> {product.location}</Typography>
+
+            {/* Location Details */}
+            {product.location_details ? (
+                <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle1"><strong>Địa chỉ chi tiết:</strong></Typography>
+                    <Typography variant="body2" sx={{ ml: 2 }}>
+                        • Tỉnh/Thành: {product.location_details.province_name || 'N/A'}
+                    </Typography>
+                    <Typography variant="body2" sx={{ ml: 2 }}>
+                        • Quận/Huyện: {product.location_details.district_name || 'N/A'}
+                    </Typography>
+                    <Typography variant="body2" sx={{ ml: 2 }}>
+                        • Xã/Phường: {product.location_details.ward_name || 'N/A'}
+                    </Typography>
+                    <Typography variant="body2" sx={{ ml: 2 }}>
+                        • Địa chỉ cụ thể: {product.location_details.specific_address || 'N/A'}
+                    </Typography>
+                    <Typography variant="body2" sx={{ ml: 2 }}>
+                        • Địa chỉ đầy đủ: {product.location_details.full_address || 'N/A'}
+                    </Typography>
+                </Box>
+            ) : (
+                <Typography variant="subtitle1"><strong>Vị trí:</strong> {product.location || 'N/A'}</Typography>
+            )}
             <Typography variant="subtitle1"><strong>Nhãn:</strong> {product.label}</Typography>
             <Typography variant="subtitle1"><strong>Hàng nặng:</strong> {product.is_heavy ? 'Có' : 'Không'}</Typography>
             <Typography variant="subtitle1"><strong>Số điện thoại liên hệ:</strong> {product.contact_phone}</Typography>

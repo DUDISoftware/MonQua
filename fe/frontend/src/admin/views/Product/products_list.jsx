@@ -73,7 +73,7 @@ const ProductsList = () => {
                 <Table aria-label="bảng sản phẩm" sx={{ whiteSpace: "nowrap", mt: 2 }}>
                     <TableHead>
                         <TableRow>
-                            {['STT', 'Tên', 'Danh mục', 'Hành động'].map((header, idx) => (
+                            {['STT', 'Tên', 'Danh mục', 'Địa chỉ', 'Hành động'].map((header, idx) => (
                                 <TableCell key={idx}>
                                     <Typography variant="subtitle2" fontWeight={600}>{header}</Typography>
                                 </TableCell>
@@ -92,6 +92,9 @@ const ProductsList = () => {
                                             product.category_id ||
                                             "N/A"}
                                     </Typography></TableCell>
+                                    <TableCell><Typography sx={{ fontSize: "13px", fontWeight: "400" }}>
+                                        {product.location_details?.full_address || product.location || "N/A"}
+                                    </Typography></TableCell>
                                     <TableCell align="center">
                                         <Button variant="outlined" color="primary" size="small" onClick={() => navigate(`/admin/products/${product._id}`)} sx={{ mr: 1 }}>Xem</Button>
                                         <Button variant="outlined" color="secondary" size="small" onClick={() => navigate(`/admin/products/update/${product._id}`)} sx={{ mr: 1 }}>Sửa</Button>
@@ -101,7 +104,7 @@ const ProductsList = () => {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={5} align="center">
+                                <TableCell colSpan={6} align="center">
                                     <Typography variant="subtitle1">Không có sản phẩm nào.</Typography>
                                 </TableCell>
                             </TableRow>

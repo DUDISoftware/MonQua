@@ -3,7 +3,7 @@ import {
     Typography, Box, Table, TableBody, TableCell, TableHead, TableRow, Button, Snackbar, Alert
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { getUsers, deleteUser } from "../../../api/user.api";
+import { getUsers, deleteUser } from "../../../api/User.api";
 
 const UsersList = () => {
     const [users, setUsers] = useState([]);
