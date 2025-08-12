@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
     Typography, Box, TextField, Button, Snackbar, Alert, FormControl, InputLabel, MenuItem, Select
 } from '@mui/material';
-import { getProductById, updateProduct } from "../../../api/product.api.js";
+import { getProductById, updateProduct, getProvinces, getDistricts, getWards } from "../../../api/product.api.js";
 import { getCategories } from "../../../api/product.category.api.js";
 import { getUserById, getUsers } from "../../../api/user.api.js";
 import { useParams, useNavigate } from "react-router-dom";
@@ -13,7 +13,6 @@ const UpdateProduct = () => {
     const navigate = useNavigate();
     const [form, setForm] = useState({
         title: "",
-        price: "",
         category_id: "",
         description: "",
         image_url: "",
@@ -30,6 +29,16 @@ const UpdateProduct = () => {
     const [subImages, setSubImages] = useState([]);
     const [categories, setCategories] = useState([]);
     const [users, setUsers] = useState([]);
+
+    // Location states
+    const [provinces, setProvinces] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+    const [selectedProvince, setSelectedProvince] = useState("");
+    const [selectedDistrict, setSelectedDistrict] = useState("");
+    const [selectedWard, setSelectedWard] = useState("");
+    const [specificAddress, setSpecificAddress] = useState("");
+
     const [loading, setLoading] = useState(true);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
     const token = localStorage.getItem("token");
@@ -58,6 +67,16 @@ const UpdateProduct = () => {
             }
         };
 
+        // Fetch provinces
+        const fetchProvinces = async () => {
+            try {
+                const data = await getProvinces(token);
+                setProvinces(data.data || []);
+            } catch (err) {
+                setSnackbar({ open: true, message: "Không thể tải danh sách tỉnh/thành", severity: 'error' });
+            }
+        };
+
         // Fetch product details
         const fetchProduct = async () => {
             try {
@@ -65,7 +84,6 @@ const UpdateProduct = () => {
                 const product = data.data?.[0] || data.data || data.product || data;
                 setForm({
                     title: product.title || "",
-                    price: product.price || "",
                     category_id: product.category_id || product.category?._id || "",
                     description: product.description || "",
                     image_url: product.image_url || "",
@@ -78,6 +96,34 @@ const UpdateProduct = () => {
                     status: product.status || "pending",
                     delivery_method: product.delivery_method || "giao_tan_tay"
                 });
+
+                // Load location details if available
+                if (product.location_details) {
+                    setSelectedProvince(product.location_details.province_code || "");
+                    setSelectedDistrict(product.location_details.district_code || "");
+                    setSelectedWard(product.location_details.ward_code || "");
+                    setSpecificAddress(product.location_details.specific_address || "");
+
+                    // Load districts if province exists
+                    if (product.location_details.province_code) {
+                        try {
+                            const districtData = await getDistricts(product.location_details.province_code, token);
+                            setDistricts(districtData.data || []);
+                        } catch (err) {
+                            console.error("Không thể tải quận/huyện:", err);
+                        }
+                    }
+
+                    // Load wards if district exists
+                    if (product.location_details.district_code) {
+                        try {
+                            const wardData = await getWards(product.location_details.district_code, token);
+                            setWards(wardData.data || []);
+                        } catch (err) {
+                            console.error("Không thể tải xã/phường:", err);
+                        }
+                    }
+                }
             } catch (err) {
                 setSnackbar({ open: true, message: "Không thể tải thông tin sản phẩm", severity: 'error' });
             } finally {
@@ -87,6 +133,7 @@ const UpdateProduct = () => {
 
         fetchCategories();
         fetchUsers();
+        fetchProvinces();
         fetchProduct();
     }, [id, token]);
 
@@ -106,6 +153,49 @@ const UpdateProduct = () => {
         }
     };
 
+    // Location handlers
+    const handleProvinceChange = async (e) => {
+        const provinceCode = e.target.value;
+        setSelectedProvince(provinceCode);
+        setSelectedDistrict("");
+        setSelectedWard("");
+        setDistricts([]);
+        setWards([]);
+
+        if (provinceCode) {
+            try {
+                const data = await getDistricts(provinceCode, token);
+                setDistricts(data.data || []);
+            } catch (err) {
+                setSnackbar({ open: true, message: "Không thể tải danh sách quận/huyện", severity: 'error' });
+            }
+        }
+    };
+
+    const handleDistrictChange = async (e) => {
+        const districtCode = e.target.value;
+        setSelectedDistrict(districtCode);
+        setSelectedWard("");
+        setWards([]);
+
+        if (districtCode) {
+            try {
+                const data = await getWards(districtCode, token);
+                setWards(data.data || []);
+            } catch (err) {
+                setSnackbar({ open: true, message: "Không thể tải danh sách xã/phường", severity: 'error' });
+            }
+        }
+    };
+
+    const handleWardChange = (e) => {
+        setSelectedWard(e.target.value);
+    };
+
+    const handleSpecificAddressChange = (e) => {
+        setSpecificAddress(e.target.value);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSnackbar({ open: false, message: '', severity: 'success' });
@@ -114,6 +204,18 @@ const UpdateProduct = () => {
             Object.keys(form).forEach(key => {
                 formData.append(key, form[key]);
             });
+
+            // Thêm location data
+            if (selectedProvince || selectedDistrict || selectedWard || specificAddress) {
+                const locationData = {
+                    selectedProvince,
+                    selectedDistrict,
+                    selectedWard,
+                    address: specificAddress
+                };
+                formData.append('location_data', JSON.stringify(locationData));
+            }
+
             if (imageFile) {
                 formData.append("image_url", imageFile);
             }
@@ -139,7 +241,6 @@ const UpdateProduct = () => {
             <Typography variant="h6" fontWeight={600} mb={2}>Cập nhật sản phẩm</Typography>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
                 <TextField fullWidth label="Tên sản phẩm" name="title" value={form.title} onChange={handleChange} required sx={{ mb: 2 }} />
-                <TextField fullWidth label="Giá" name="price" value={form.price} onChange={handleChange} required type="number" sx={{ mb: 2 }} />
                 <FormControl fullWidth sx={{ mb: 2 }} required>
                     <InputLabel id="category-label">Danh mục sản phẩm</InputLabel>
                     <Select
@@ -158,6 +259,70 @@ const UpdateProduct = () => {
                     </Select>
                 </FormControl>
                 <TextField fullWidth label="Mô tả" name="description" value={form.description} onChange={handleChange} multiline rows={3} sx={{ mb: 2 }} />
+
+                {/* Location Section */}
+                <Typography variant="h6" sx={{ mb: 2, mt: 2 }}>Thông tin địa chỉ</Typography>
+
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                    <InputLabel id="province-label">Tỉnh/Thành phố</InputLabel>
+                    <Select
+                        labelId="province-label"
+                        value={selectedProvince}
+                        label="Tỉnh/Thành phố"
+                        onChange={handleProvinceChange}
+                    >
+                        <MenuItem value="">-- Chọn tỉnh/thành phố --</MenuItem>
+                        {provinces.map((province) => (
+                            <MenuItem key={province.code} value={province.code}>
+                                {province.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+
+                <FormControl fullWidth sx={{ mb: 2 }} disabled={!selectedProvince}>
+                    <InputLabel id="district-label">Quận/Huyện</InputLabel>
+                    <Select
+                        labelId="district-label"
+                        value={selectedDistrict}
+                        label="Quận/Huyện"
+                        onChange={handleDistrictChange}
+                    >
+                        <MenuItem value="">-- Chọn quận/huyện --</MenuItem>
+                        {districts.map((district) => (
+                            <MenuItem key={district.code} value={district.code}>
+                                {district.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+
+                <FormControl fullWidth sx={{ mb: 2 }} disabled={!selectedDistrict}>
+                    <InputLabel id="ward-label">Xã/Phường</InputLabel>
+                    <Select
+                        labelId="ward-label"
+                        value={selectedWard}
+                        label="Xã/Phường"
+                        onChange={handleWardChange}
+                    >
+                        <MenuItem value="">-- Chọn xã/phường --</MenuItem>
+                        {wards.map((ward) => (
+                            <MenuItem key={ward.code} value={ward.code}>
+                                {ward.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+
+                <TextField
+                    fullWidth
+                    label="Địa chỉ cụ thể (số nhà, tên đường)"
+                    value={specificAddress}
+                    onChange={handleSpecificAddressChange}
+                    sx={{ mb: 2 }}
+                    placeholder="Ví dụ: 123 Nguyễn Văn A"
+                />
+
                 <TextField fullWidth label="Vị trí" name="location" value={form.location} onChange={handleChange} sx={{ mb: 2 }} />
                 <TextField fullWidth label="Nhãn" name="label" value={form.label} onChange={handleChange} sx={{ mb: 2 }} />
                 <TextField fullWidth label="Số điện thoại liên hệ" name="contact_phone" value={form.contact_phone} onChange={handleChange} sx={{ mb: 2 }} />
@@ -193,8 +358,8 @@ const UpdateProduct = () => {
                     >
                         <MenuItem value="pending">Đang chờ</MenuItem>
                         <MenuItem value="active">Đã duyệt</MenuItem>
-                        <MenuItem value="rejected">Từ chối</MenuItem>
-                        <MenuItem value="inactive">Không hoạt động</MenuItem>
+                        <MenuItem value="given">Đã tặng</MenuItem>
+                        <MenuItem value="hidden">Ẩn</MenuItem>
                     </Select>
                 </FormControl>
 
@@ -209,8 +374,8 @@ const UpdateProduct = () => {
                         onChange={handleChange}
                     >
                         <MenuItem value="giao_tan_tay">Giao tận tay</MenuItem>
-                        <MenuItem value="tu_van_tay">Tự vận chuyển</MenuItem>
-                        <MenuItem value="ship_cod">Ship COD</MenuItem>
+                        <MenuItem value="nguoi_nhan_den_lay">Người nhận đến lấy</MenuItem>
+                        <MenuItem value="gap_tai_tay">Gặp tại tay</MenuItem>
                     </Select>
                 </FormControl>
 

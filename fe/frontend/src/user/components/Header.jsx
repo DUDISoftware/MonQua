@@ -23,9 +23,9 @@ export default function Header() {
   const menuRef = useRef();
   const navigate = useNavigate();
 
-  const fullname = localStorage.getItem("fullname");
-  const userInitial = fullname
-    ? fullname.trim().split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)
+  const userName = localStorage.getItem("userName");
+  const userInitial = userName
+    ? userName.trim().split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)
     : "TD";
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function Header() {
 
         {/* Actions */}
         <div className="hidden sm:flex items-center gap-4 ml-4 relative">
-          {fullname && (
+          {userName && (
             <>
               <button className="p-2 rounded-full hover:bg-[#D6F5E3] transition" title="Thông báo">
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#222" strokeWidth="2">
@@ -115,7 +115,7 @@ export default function Header() {
           )}
 
           {/* User Avatar */}
-          {fullname ? (
+          {userName ? (
             <div className="relative" ref={menuRef}>
               <button
                 className="flex items-center gap-2 px-2 py-1 rounded-full border border-[#4CAF50] bg-white hover:bg-[#D6F5E3] transition"
@@ -124,7 +124,7 @@ export default function Header() {
                 <span className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-[#222] bg-white text-[16px] border border-[#4CAF50]">
                   {userInitial}
                 </span>
-                <span className="font-bold text-[#388E3C] px-2">{fullname.split(" ")[0]}</span>
+                <span className="font-bold text-[#388E3C] px-2">{userName.split(" ")[0]}</span>
                 <svg width="16" height="16" fill="none" viewBox="0 0 20 20">
                   <path d="M5 8l5 5 5-5" stroke="#388E3C" strokeWidth="2" strokeLinecap="round" />
                 </svg>
@@ -185,7 +185,7 @@ export default function Header() {
                 </button>
               </li>
             ))}
-            {fullname ? (
+            {userName ? (
               <li>
                 <button
                   onClick={handleLogout}

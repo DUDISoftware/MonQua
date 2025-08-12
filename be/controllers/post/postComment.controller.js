@@ -87,16 +87,14 @@ router.post("/add/:postId", verifyToken, async (req, res) => {
         return res.status(201).json({
             error: 0,
             error_text: "Bình luận đã được thêm thành công!",
-            data_name: "Bình luận",
-            data: [newComment],
+            data: newComment, // Trả về object thay vì array
         });
     } catch (error) {
         console.error("Lỗi khi bình luận:", error.message);
         return res.status(500).json({
             error: 500,
             error_text: error.message,
-            data_name: "Bình luận",
-            data: [],
+            data: null,
         });
     }
 });
@@ -108,23 +106,21 @@ router.post("/add/:postId/:id", verifyToken, async (req, res) => {
             post_id: req.params.postId,
             user_id: req.userData.user._id, // Lấy ID người dùng từ token
             content: req.body.content,
-            parent_id: req.params.id,
+            parent_id: req.params.id, // ID của comment được reply
         };
         // Bỏ kiểm tra validateId
         const newComment = await commentService.addComment(commentData);
         return res.status(201).json({
             error: 0,
-            error_text: "Bình luận đã được thêm thành công!",
-            data_name: "Bình luận",
-            data: [newComment],
+            error_text: "Trả lời bình luận thành công!",
+            data: newComment, // Consistent với add comment endpoint
         });
     } catch (error) {
-        console.error("Lỗi khi bình luận:", error.message);
+        console.error("Lỗi khi trả lời bình luận:", error.message);
         return res.status(500).json({
             error: 500,
             error_text: error.message,
-            data_name: "Bình luận",
-            data: [],
+            data: null,
         });
     }
 });

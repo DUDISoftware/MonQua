@@ -31,3 +31,7 @@ export const toggleLikePost = (postId, token) =>
 // 2. Lấy bài viết nhiều like
 export const getTopLikedPosts = (limit = 10, token) =>
     apiRequest("get", `/posts/like/top-liked?limit=${limit}`, {}, token);
+
+// 3. Lấy trạng thái like của user cho một post
+export const getLikeStatus = (postId, token) =>
+    apiRequest("get", `/posts/like/${postId}/status`, {}, token);

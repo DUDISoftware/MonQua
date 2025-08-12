@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { addPost } from "../../../../api/post.api.js";
+import { getPostCategories } from "../../../../api/post.category.api.js";
 import { getUserById } from "../../../../api/user.api";
 
 const PostEditor = ({ onPostCreated, categories = [], isLoggedIn }) => {
@@ -9,7 +10,9 @@ const PostEditor = ({ onPostCreated, categories = [], isLoggedIn }) => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [userInfo, setUserInfo] = useState(null);
+    const [allCategories, setAllCategories] = useState(categories);
     const fileInputRef = useRef(null);
 
     const token = localStorage.getItem("token");
@@ -29,11 +32,35 @@ const PostEditor = ({ onPostCreated, categories = [], isLoggedIn }) => {
             fetchUserInfo();
         }
 
+        // Fetch categories if not provided
+        const fetchCategories = async () => {
+            if (categories.length === 0 && token) {
+                try {
+                    const response = await getPostCategories(token);
+                    const categoryList = response.data || response.categories || response;
+                    const validCategories = Array.isArray(categoryList) ? categoryList : [];
+                    setAllCategories(validCategories);
+
+                    // Set default category if available
+                    if (validCategories.length > 0 && !selectedCategory) {
+                        setSelectedCategory(validCategories[0]._id);
+                    }
+                } catch (error) {
+                    console.error("Error fetching categories:", error);
+                    setError("Không thể tải danh sách danh mục");
+                }
+            } else {
+                setAllCategories(categories);
+            }
+        };
+
+        fetchCategories();
+
         // Set default category if available
-        if (categories.length > 0 && !selectedCategory) {
-            setSelectedCategory(categories[0]._id);
+        if (allCategories.length > 0 && !selectedCategory) {
+            setSelectedCategory(allCategories[0]._id);
         }
-    }, [userId, token, categories, selectedCategory]);
+    }, [userId, token, categories, selectedCategory, allCategories]);
 
     const handleContentChange = (e) => {
         setContent(e.target.value);
@@ -88,7 +115,7 @@ const PostEditor = ({ onPostCreated, categories = [], isLoggedIn }) => {
             const formData = new FormData();
             formData.append("content", content);
             formData.append("category_id", selectedCategory);
-            formData.append("status", "active");
+            formData.append("status", "active"); // User posts are always active
 
             if (images.length > 0) {
                 images.forEach(image => {
@@ -98,15 +125,23 @@ const PostEditor = ({ onPostCreated, categories = [], isLoggedIn }) => {
 
             const response = await addPost(formData, token);
 
+            // Show success message
+            setSuccess("Đăng bài thành công!");
+            setError("");
+
             // Call the parent callback when post is created
             if (onPostCreated) onPostCreated();
 
             // Reset form
-            setContent("");
-            setImages([]);
-            setPreviewImages([]);
+            setTimeout(() => {
+                setContent("");
+                setImages([]);
+                setPreviewImages([]);
+                setSuccess("");
+            }, 2000);
         } catch (error) {
-            setError("Đăng bài thất bại. Vui lòng thử lại sau.");
+            setError("Đăng bài thất bại: " + (error?.response?.data?.error_text || "Vui lòng thử lại sau."));
+            setSuccess("");
             console.error("Error submitting post:", error);
         } finally {
             setIsSubmitting(false);
@@ -149,14 +184,14 @@ const PostEditor = ({ onPostCreated, categories = [], isLoggedIn }) => {
                 </div>
             )}
 
-            {categories.length > 0 && (
+            {allCategories.length > 0 && (
                 <div className="mb-3">
                     <select
                         className="w-full border border-gray-200 rounded-lg p-2"
                         value={selectedCategory}
                         onChange={handleCategoryChange}
                     >
-                        {categories.map(category => (
+                        {allCategories.map(category => (
                             <option key={category._id} value={category._id}>
                                 {category.name}
                             </option>
@@ -165,7 +200,8 @@ const PostEditor = ({ onPostCreated, categories = [], isLoggedIn }) => {
                 </div>
             )}
 
-            {error && <div className="text-red-500 mb-3 text-sm">{error}</div>}
+            {error && <div className="text-red-500 mb-3 text-sm bg-red-50 p-2 rounded-lg">{error}</div>}
+            {success && <div className="text-green-600 mb-3 text-sm bg-green-50 p-2 rounded-lg">{success}</div>}
 
             <div className="flex gap-3">
                 <button

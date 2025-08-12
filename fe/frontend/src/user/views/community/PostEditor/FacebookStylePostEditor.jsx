@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { addPost } from "../../../../api/post.api.js";
+import { getPostCategories } from "../../../../api/post.category.api.js";
 import { getUserById } from "../../../../api/user.api";
 import "./FacebookPostEditor.css";
 
@@ -10,7 +11,9 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
     const [selectedCategory, setSelectedCategory] = useState(initialCategory);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [userInfo, setUserInfo] = useState(null);
+    const [allCategories, setAllCategories] = useState(categories);
     const [step, setStep] = useState(1); // 1: initial form, 2: preview/details
     const fileInputRef = useRef(null);
     const modalRef = useRef(null);
@@ -55,13 +58,37 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
             fetchUserInfo();
         }
 
+        // Fetch categories if not provided
+        const fetchCategories = async () => {
+            if (categories.length === 0 && token) {
+                try {
+                    const response = await getPostCategories(token);
+                    const categoryList = response.data || response.categories || response;
+                    const validCategories = Array.isArray(categoryList) ? categoryList : [];
+                    setAllCategories(validCategories);
+
+                    // Set default category if available
+                    if (validCategories.length > 0 && !selectedCategory) {
+                        setSelectedCategory(validCategories[0]._id);
+                    }
+                } catch (error) {
+                    console.error("Error fetching categories:", error);
+                    setError("Không thể tải danh sách danh mục");
+                }
+            } else {
+                setAllCategories(categories);
+            }
+        };
+
+        fetchCategories();
+
         // Use initialCategory or set default category if available
         if (initialCategory && initialCategory !== selectedCategory) {
             setSelectedCategory(initialCategory);
-        } else if (categories.length > 0 && !selectedCategory) {
-            setSelectedCategory(categories[0]._id);
+        } else if (allCategories.length > 0 && !selectedCategory) {
+            setSelectedCategory(allCategories[0]._id);
         }
-    }, [userId, token, categories, selectedCategory, initialCategory]);
+    }, [userId, token, categories, selectedCategory, initialCategory, allCategories]);
 
     // Update category when initialCategory changes
     useEffect(() => {
@@ -100,7 +127,7 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
     };
 
     const handleNext = () => {
-        if (!selectedCategory && categories.length > 0) {
+        if (!selectedCategory && allCategories.length > 0) {
             setError("Vui lòng chọn danh mục cho bài viết");
             return;
         }
@@ -135,7 +162,7 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
             const formData = new FormData();
             formData.append("content", content);
             formData.append("category_id", selectedCategory);
-            formData.append("status", "active");
+            formData.append("status", "active"); // User posts are always active
 
             if (images.length > 0) {
                 images.forEach(image => {
@@ -145,17 +172,25 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
 
             const response = await addPost(formData, token);
 
+            // Show success message
+            setSuccess("Đăng bài thành công!");
+            setError("");
+
             // Call the parent callback when post is created
             if (onPostCreated) onPostCreated();
 
-            // Reset form
-            setContent("");
-            setImages([]);
-            setPreviewImages([]);
-            setStep(1);
-            onClose();
+            // Reset form and close modal after delay
+            setTimeout(() => {
+                setContent("");
+                setImages([]);
+                setPreviewImages([]);
+                setStep(1);
+                setSuccess("");
+                onClose();
+            }, 1500);
         } catch (error) {
-            setError("Đăng bài thất bại. Vui lòng thử lại sau.");
+            setError("Đăng bài thất bại: " + (error?.response?.data?.error_text || "Vui lòng thử lại sau."));
+            setSuccess("");
             console.error("Error submitting post:", error);
         } finally {
             setIsSubmitting(false);
@@ -216,9 +251,9 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
                                     </button>
 
                                     {/* Category indicator */}
-                                    {selectedCategory && categories.length > 0 && (
+                                    {selectedCategory && allCategories.length > 0 && (
                                         <div className="text-xs bg-[#E6F4E6] text-[#22C55E] px-2 py-1 rounded-md">
-                                            {categories.find(cat => cat._id === selectedCategory)?.name || "Danh mục"}
+                                            {allCategories.find(cat => cat._id === selectedCategory)?.name || "Danh mục"}
                                         </div>
                                     )}
                                 </div>
@@ -256,7 +291,7 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
                         )}
 
                         {/* Category Selection - Enhanced with Tailwind */}
-                        {categories.length > 0 && (
+                        {allCategories.length > 0 && (
                             <div className="mb-4 border border-gray-100 rounded-lg p-3 bg-gray-50">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
@@ -276,7 +311,7 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
 
                                 {/* Category Pills */}
                                 <div className="flex flex-wrap gap-2">
-                                    {categories.map(category => (
+                                    {allCategories.map(category => (
                                         <button
                                             key={category._id}
                                             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedCategory === category._id
@@ -346,13 +381,20 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
                             className="hidden"
                         />
 
-                        {error && <div className="text-red-500 mb-3 text-sm font-medium flex items-center gap-2">
+                        {error && <div className="text-red-500 mb-3 text-sm font-medium flex items-center gap-2 bg-red-50 p-3 rounded-lg border border-red-200">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <line x1="12" y1="8" x2="12" y2="12"></line>
                                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
                             </svg>
                             {error}
+                        </div>}
+
+                        {success && <div className="text-green-600 mb-3 text-sm font-medium flex items-center gap-2 bg-green-50 p-3 rounded-lg border border-green-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            {success}
                         </div>}
 
                         {/* Next Button */}
@@ -406,7 +448,7 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
                             </div>
 
                             {/* Display selected category */}
-                            {selectedCategory && categories.length > 0 && (
+                            {selectedCategory && allCategories.length > 0 && (
                                 <div className="mb-4 bg-gray-50 rounded-lg p-3 border border-gray-100">
                                     <div className="flex items-center gap-2">
                                         <div className="w-8 h-8 rounded-full bg-[#E6F4E6] flex items-center justify-center">
@@ -418,20 +460,27 @@ const FacebookStylePostEditor = ({ isOpen, onClose, onPostCreated, categories = 
                                         </div>
                                         <div className="font-medium text-gray-700">Danh mục bài viết:</div>
                                         <div className="bg-[#22C55E] text-white px-3 py-1 rounded-full text-sm font-medium">
-                                            {categories.find(cat => cat._id === selectedCategory)?.name || "Danh mục"}
+                                            {allCategories.find(cat => cat._id === selectedCategory)?.name || "Danh mục"}
                                         </div>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        {error && <div className="text-red-500 mb-3 text-sm font-medium flex items-center gap-2">
+                        {error && <div className="text-red-500 mb-3 text-sm font-medium flex items-center gap-2 bg-red-50 p-3 rounded-lg border border-red-200">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <line x1="12" y1="8" x2="12" y2="12"></line>
                                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
                             </svg>
                             {error}
+                        </div>}
+
+                        {success && <div className="text-green-600 mb-3 text-sm font-medium flex items-center gap-2 bg-green-50 p-3 rounded-lg border border-green-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            {success}
                         </div>}
 
                         {/* Action Buttons */}

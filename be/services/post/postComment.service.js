@@ -32,7 +32,14 @@ module.exports = {
                 throw new Error("Bài viết không tồn tại");
             }
             const newComment = new CommunityCommentsModel(commentData);
-            return await newComment.save();
+            const savedComment = await newComment.save();
+
+            // Populate user data trước khi trả về
+            const populatedComment = await CommunityCommentsModel.findById(savedComment._id)
+                .populate('user_id', 'name email')
+                .lean();
+
+            return populatedComment;
         } catch (error) {
             console.error("Lỗi khi bình luận:", error.message);
             throw new Error("Lỗi khi bình luận.");
@@ -41,16 +48,36 @@ module.exports = {
 
     async getCommentsByPostId(postId) {
         try {
-            const comments = await CommunityCommentsModel.find({ post_id: postId, parent_id: null, status: 'active' })
-                .populate('childCount')
-                .populate("likeCount")
-                .populate({
-                    path: "user",
-                    select: '_id name avatar_url'
-                })
-                .select('_id post_id content user_id created_at updated_at')
+            // Lấy tất cả comments của post (bao gồm cả replies)
+            const allComments = await CommunityCommentsModel.find({ post_id: postId, status: 'active' })
+                .populate('user_id', 'name email')
+                .sort({ created_at: 1 }) // Sắp xếp theo thời gian tăng dần
                 .lean();
-            return comments || [];
+
+            // Tổ chức thành cấu trúc cây (parent -> children)
+            const commentMap = {};
+            const rootComments = [];
+
+            // Tạo map của tất cả comments
+            allComments.forEach(comment => {
+                comment.replies = [];
+                commentMap[comment._id] = comment;
+            });
+
+            // Sắp xếp thành cấu trúc parent-child
+            allComments.forEach(comment => {
+                if (comment.parent_id) {
+                    // Đây là reply
+                    if (commentMap[comment.parent_id]) {
+                        commentMap[comment.parent_id].replies.push(comment);
+                    }
+                } else {
+                    // Đây là comment gốc
+                    rootComments.push(comment);
+                }
+            });
+
+            return rootComments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         } catch (error) {
             console.error("Lỗi khi lấy bình luận:", error.message);
             throw new Error("Lỗi khi lấy bình luận.");
@@ -59,22 +86,8 @@ module.exports = {
 
     async getCommentById(id) {
         try {
-            const comment = await CommunityCommentsModel.find({ _id: id, status: 'active' })
-                .select('_id post_id content user_id created_at updated_at')
-                .populate({
-                    path: "user",
-                    select: '_id name avatar_url'
-                })
-                .populate("likeCount")
-                .populate('childCount')
-                .populate({
-                    path: "childComment",
-                    select: '_id content user_id created_at updated_at',
-                    populate: {
-                        path: "user childCount",
-                        select: '_id name avatar_url'
-                    }
-                })
+            const comment = await CommunityCommentsModel.findOne({ _id: id, status: 'active' })
+                .populate('user_id', 'name email')
                 .lean();
             if (!comment) {
                 throw new Error("Bình luận không tồn tại");

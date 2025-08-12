@@ -19,6 +19,35 @@ module.exports = {
             throw new Error("Lỗi khi chuyển trạng thái thích bài viết.");
         }
     },
+
+    async getLikeCount(postId) {
+        try {
+            return await PostLikesModel.countDocuments({ post_id: postId });
+        } catch (error) {
+            console.error("Lỗi khi đếm số like:", error.message);
+            return 0;
+        }
+    },
+
+    async getLikeStatus(postId, userId) {
+        try {
+            const likeCount = await this.getLikeCount(postId);
+            const isLiked = await PostLikesModel.exists({ post_id: postId, user_id: userId });
+
+            return {
+                postId,
+                likeCount,
+                isLiked: !!isLiked
+            };
+        } catch (error) {
+            console.error("Lỗi khi lấy trạng thái like:", error.message);
+            return {
+                postId,
+                likeCount: 0,
+                isLiked: false
+            };
+        }
+    },
     async getTopLikedPosts(limit = 10) {
         try {
             // Đếm số lượng like cho mỗi bài viết

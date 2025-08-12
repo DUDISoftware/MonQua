@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { loginUser, googleLogin } from "../../../api/User.api.js";
+import { loginUser, googleLogin } from "../../../api/user.api.js";
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 import MonQuaNhoImg from "../../assets/MonQuaNho.png";
@@ -22,11 +22,12 @@ const Login = () => {
             // Lưu token và thông tin user vào localStorage
             localStorage.setItem("token", result.data[0].token);
             localStorage.setItem("role", result.data[0].role);
-            localStorage.setItem("user_id", result.data[0]._id);
-            localStorage.setItem("fullname", result.data[0].name);
-            localStorage.setItem("phone", result.data[0].phone || ""); // thêm dòng này
-            localStorage.setItem("verified", result.data[0].verified); // <-- thêm dòng này
-            localStorage.setItem("token", result.data[0].token);
+            localStorage.setItem("userId", result.data[0]._id); // Consistent key name
+            localStorage.setItem("userName", result.data[0].name); // Consistent key name
+            localStorage.setItem("userEmail", result.data[0].email || "");
+            localStorage.setItem("phone", result.data[0].phone || "");
+            localStorage.setItem("verified", result.data[0].verified);
+
             if (result.data[0].role === "admin") {
                 navigate("/admin/dashboard");
             } else {
@@ -42,9 +43,11 @@ const Login = () => {
         try {
             const result = await googleLogin(credentialResponse.credential); // Gửi id_token lên backend
             localStorage.setItem("token", result.data[0].token);
-            localStorage.setItem("fullname", result.data[0].name || "");
-            localStorage.setItem("phone", result.data[0].phone || ""); // thêm dòng này
             localStorage.setItem("role", "user");
+            localStorage.setItem("userId", result.data[0]._id || result.data[0].id); // Consistent key name
+            localStorage.setItem("userName", result.data[0].name || ""); // Consistent key name
+            localStorage.setItem("userEmail", result.data[0].email || "");
+            localStorage.setItem("phone", result.data[0].phone || "");
 
             navigate("/");
         } catch (err) {
